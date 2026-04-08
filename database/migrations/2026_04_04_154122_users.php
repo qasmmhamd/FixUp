@@ -15,6 +15,8 @@ return new class extends Migration
                 $table->string('phone')->nullable();
                 $table->boolean('is_active')->default(true);
                 $table->string('profile_picture')->nullable();
+                $table->date('birth_date')->nullable();
+                $table->string('address')->nullable();
                 $table->enum('role', [ 'customer', 'worker'])->default('customer');
 
         });
