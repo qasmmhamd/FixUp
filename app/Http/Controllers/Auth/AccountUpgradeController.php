@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use App\Models\Address;
 use Illuminate\Http\Request;
 
 class AccountUpgradeController extends Controller
@@ -13,7 +14,6 @@ class AccountUpgradeController extends Controller
         $ViewData = $request->validate([
             "name" => "string|max:255",
             "phone" => "digits:10",
-            "address" => "string|max:255",
             "profile_picture"=>"image|mimes:jpg,jpeg,png",
         ]);
          $user = $request->user();
@@ -23,6 +23,18 @@ class AccountUpgradeController extends Controller
             $user->profile_picture = $imagePath;
         }
         $user->update($ViewData);
+         $request->validate([
+        'city' => 'required|string',
+        'street' => 'required|string',
+         ]);
+
+    // إنشاء العنوان
+         $address = Address::create([
+        'user_id' => $request->user()->id, // المستخدم الحالي
+        'city' => $request->city,
+        'street' => $request->street,
+        ]);
+
     
        return response()->json([
         'message' => 'Account upgraded successfully',

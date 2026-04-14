@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ai_messages', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-
-    $table->text('message');
-    $table->enum('sender', ['user', 'ai']);
-
-    $table->timestamps();
-});
+        Schema::create('addresses', function (Blueprint $table) {
+            $table->id();
+          $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+    $table->string('city');
+    $table->string('street');
+    $table->string('area')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ai_messages');
+        Schema::dropIfExists('addresses');
     }
 };

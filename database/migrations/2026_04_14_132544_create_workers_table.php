@@ -11,15 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('addresses', function (Blueprint $table) {
-    $table->id();
+        Schema::create('workers', function (Blueprint $table) {
+            $table->id();
+             
     $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-    $table->string('city');
-    $table->string('street');
-    $table->decimal('lat', 10, 8)->nullable();
-    $table->decimal('lng', 11, 8)->nullable();
-    $table->timestamps();
-});
+    $table->foreignId('career_id')->constrained()->cascadeOnDelete();
+    $table->text('about')->nullable();
+    $table->boolean('status')->default(true);
+    $table->integer('years_experience')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('addresses');
+        Schema::dropIfExists('workers');
     }
 };

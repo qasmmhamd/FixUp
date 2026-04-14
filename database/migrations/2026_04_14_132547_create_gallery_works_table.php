@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('workshop_images', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('workshop_id')->constrained()->cascadeOnDelete();
-    $table->string('image_path');
-    $table->timestamps();
-});
+        Schema::create('gallery_works', function (Blueprint $table) {
+            $table->id();
+     
+    $table->foreignId('worker_id')->constrained()->cascadeOnDelete();
+    $table->text('description')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('workshop_images');
+        Schema::dropIfExists('gallery_works');
     }
 };

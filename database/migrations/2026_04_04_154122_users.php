@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
                 $table->string('phone')->nullable();
                 $table->boolean('is_active')->default(true);
-                $table->string('profile_picture')->nullable();
+                $table->string('phone_number')->nullable();
+                $table->string('profile_image')->nullable();
+                $table->integer('age')->nullable();
                 $table->date('birth_date')->nullable();
-                $table->string('address')->nullable();
-                $table->enum('role', [ 'customer', 'worker'])->default('customer');
+                $table->enum('role', [ 'customer', 'worker','admin'])->default('customer');
 
         });
     }
@@ -28,7 +29,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['phone', 'profile_picture', 'role']);
+            $table->dropColumn(['phone', 'profile_picture', 'role', 'birth_date']);
         });
     }
 };

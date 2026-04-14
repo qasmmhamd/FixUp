@@ -9,9 +9,16 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password','phone','profile_picture','address','birth_date'])]
+#[Fillable([ 'name',
+        'email',
+        'password',
+        'phone_number',
+        'profile_image',
+        'role',
+        'age',])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -30,23 +37,18 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function workshop()
-{
-    return $this->hasOne(Workshop::class, 'owner_id');
-}
+     public function worker()
+    {
+        return $this->hasOne(Worker::class);
+    }
 
-public function bookings()
-{
-    return $this->hasMany(Booking::class, 'customer_id');
-}
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 
-public function addresses()
-{
-    return $this->hasMany(Address::class);
-}
-
-public function reviews()
-{
-    return $this->hasMany(Review::class, 'customer_id');
-}
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
 }
