@@ -11,7 +11,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 Route::post('/upgrade-account', [App\Http\Controllers\Auth\AccountUpgradeController::class, 'updatedata'])->middleware('auth:sanctum');
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    Route::post('/admin/dashboard', [EnterWorkersController::class, 'store']);
+    Route::post('/admin/EnterWorker', [EnterWorkersController::class, 'store']);
 
 });
 Route::get('/test', function () {
