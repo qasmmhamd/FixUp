@@ -18,7 +18,7 @@ class Service extends Model
 
     public function workers()
     {
-        return $this->belongsToMany(Worker::class);
+        return $this->belongsToMany(Worker::class,'worker_service');
     }
 
     public function orders()

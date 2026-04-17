@@ -13,6 +13,7 @@ class Image extends Model
         'path',
     ];
 
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -27,4 +28,10 @@ class Image extends Model
     {
         return $this->belongsTo(GalleryWork::class);
     }
+    public function worker()
+    {
+          return $this->belongsTo(Worker::class);
+    }
+    
+    
 }

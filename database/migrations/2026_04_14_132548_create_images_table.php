@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
     $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
     $table->foreignId('order_id')->nullable()->constrained()->nullOnDelete();
+     $table->foreignId('worker_id')->nullable()->constrained()->nullOnDelete();
     $table->foreignId('gallery_work_id')->nullable()->constrained()->nullOnDelete();
     $table->string('path');
             $table->timestamps();

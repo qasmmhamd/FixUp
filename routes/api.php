@@ -1,21 +1,40 @@
 <?php
 
-use App\Http\Controllers\DashboardAdmin\EnterWorkersController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
+use App\Http\Controllers\Filters\WorkerController;
+use App\Http\Controllers\Auth\AccountUpgradeController;
+use App\Http\Controllers\Auth\RegisteredWorkersController;
+use App\Http\Controllers\DashboardAdmin\ManagingWorkersController;
+use App\Http\Controllers\Filters\WorkersFiltersController;
+
+// Authenticated User
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+    Route::post('/register-worker', [RegisteredWorkersController::class, 'store']);
+
+    Route::post('/upgrade-account', [AccountUpgradeController::class, 'updatedata']);
+
+   
+    // Admin Routes
+    
+    
+    Route::middleware('role:admin')->prefix('admin')->group(function () {
+
+        Route::put('/worker/{worker}', [ManagingWorkersController::class, 'update']);
+        Route::get('workers/filters', [WorkersFiltersController::class, 'index']);
+        Route::delete('/worker/{worker}', [ManagingWorkersController::class, 'delete']);
+
+
+    });
 
 });
 
-Route::post('/upgrade-account', [App\Http\Controllers\Auth\AccountUpgradeController::class, 'updatedata'])->middleware('auth:sanctum');
-Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    Route::post('/admin/EnterWorker', [EnterWorkersController::class, 'store']);
+// Auth Routes
 
-});
-Route::get('/test', function () {
-    return Auth::user()->role;
-})->middleware('auth:sanctum');
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

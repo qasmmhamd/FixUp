@@ -17,7 +17,7 @@ return new class extends Migration
     $table->foreignId('user_id')->constrained()->cascadeOnDelete();
     $table->foreignId('career_id')->constrained()->cascadeOnDelete();
     $table->text('about')->nullable();
-    $table->boolean('status')->default(true);
+    $table->enum('status', [ 'active', 'blocked','waiting'])->default('waiting');
     $table->integer('years_experience')->nullable();
             $table->timestamps();
         });

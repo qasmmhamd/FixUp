@@ -25,11 +25,19 @@ class Worker extends Model
 
     public function services()
     {
-        return $this->belongsToMany(Service::class);
+        return $this->belongsToMany(Service::class,'worker_service');
     }
 
     public function offers()
     {
         return $this->hasMany(PriceOffer::class);
+    }
+    public function images()
+    {
+         return $this->hasMany(Image::class);
+    }
+    public function scopeStatus($query, $status)
+    {
+           return $query->where('status', $status);
     }
 }
