@@ -15,7 +15,7 @@ class WorkerService
 
             $worker = Worker::create([
                 "user_id" => $user->id,
-                
+                "status" => $data["status"] ?? "waiting",
                 "career_id" => $data["career_id"],
                 "about" => $data["about"] ?? null,
                 "years_experience" => $data["years_experience"] ?? null,

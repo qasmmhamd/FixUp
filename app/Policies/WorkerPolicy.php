@@ -47,7 +47,7 @@ class WorkerPolicy
     public function delete(User $user, Worker $worker): bool
     {
         return $user->role === 'admin';   
- }
+   }
 
     /**
      * Determine whether the user can restore the model.
