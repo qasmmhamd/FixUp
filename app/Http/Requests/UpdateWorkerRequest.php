@@ -26,7 +26,7 @@ class UpdateWorkerRequest extends FormRequest
         "career_id" => "sometimes|exists:careers,id",
         "about" => "nullable|string",
         "years_experience" => "nullable|integer|min:0",
-        "status" => "required|in:active,blocked,waiting",
+        "status" => "in:active,blocked,waiting",
 
         "services" => "nullable|array",
         "services.*" => "exists:services,id",
