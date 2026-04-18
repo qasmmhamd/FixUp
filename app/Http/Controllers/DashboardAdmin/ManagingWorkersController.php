@@ -7,9 +7,20 @@ use App\Models\Worker;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\UpdateWorkerRequest;
 use App\Services\WorkerService;
+use App\Http\Resources\WorkerResource;
 
 class ManagingWorkersController extends Controller
 {       use AuthorizesRequests;
+    public function index()
+{
+    $workers = Worker::with(['user', 'career'])->latest()->paginate(10);
+
+    return WorkerResource::collection($workers);
+}
+        public function show(Worker $worker)
+{
+    return new WorkerResource($worker->load(['user', 'career']));
+}
 
     public function update(UpdateWorkerRequest $request, Worker $worker, WorkerService $service)
 {   
@@ -28,14 +39,6 @@ class ManagingWorkersController extends Controller
     ]);
     }
 
-    public function delete(Worker $worker)
-    {
-        $this->authorize('delete', $worker);
+   
 
-        $worker->delete();
-
-        return response()->json([
-            "message" => "Worker deleted successfully"
-        ]);
-}
 }

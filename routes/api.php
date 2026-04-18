@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\RegisteredWorkersController;
 use App\Http\Controllers\DashboardAdmin\ManagingWorkersController;
 use App\Http\Controllers\Filters\WorkersFiltersController;
 use App\Http\Controllers\DashboardAdmin\ManagingWorkersServiesController;
+use App\Http\Controllers\DashboardAdmin\ManagingCareersController;
 
 // Authenticated User
 
@@ -18,7 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::post('/register-worker', [RegisteredWorkersController::class, 'store']);
-
+    Route::apiResource('workers', ManagingWorkersController::class)->only(['index', 'show']);
     Route::post('/upgrade-account', [AccountUpgradeController::class, 'updatedata']);
 
    
@@ -27,11 +28,11 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::middleware('role:admin')->prefix('admin')->group(function () {
 
-        Route::put('/worker/{worker}', [ManagingWorkersController::class, 'update']);
+        Route::apiResource('/worker',ManagingWorkersController::class);
         Route::get('workers/filters', [WorkersFiltersController::class, 'index']);
-        Route::delete('/worker/{worker}', [ManagingWorkersController::class, 'delete']);
         Route::apiResource('services', ManagingWorkersServiesController::class);
-
+        Route::apiResource('careers', ManagingCareersController::class);
+        
 
     });
 

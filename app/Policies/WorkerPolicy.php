@@ -38,7 +38,7 @@ class WorkerPolicy
      */
     public function update(User $user, Worker $worker): bool
     {
-         return $user->id === $worker->user_id;
+         return $user->role === 'admin' ;
     }
 
     /**

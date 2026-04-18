@@ -13,7 +13,7 @@ class ManagingWorkersServiesController extends Controller
 {
         public function index()
     {
-        return ServiceResource::collection(Service::latest()->get());
+        return ServiceResource::collection(Service::latest()->paginate(10));
     }
 
     public function store(StoreServiceRequest $request)
