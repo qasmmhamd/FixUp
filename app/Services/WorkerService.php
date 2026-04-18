@@ -45,6 +45,9 @@ class WorkerService
                 "status" => $data["status"] ?? $worker->status,
             ]);
 
+            
+
+
             if (isset($data['services'])) {
                 $worker->services()->sync($data['services']);
             }
