@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/register-worker', [RegisteredWorkersController::class, 'store']);
     Route::apiResource('workers', ManagingWorkersController::class)->only(['index', 'show']);
     Route::post('/upgrade-account', [AccountUpgradeController::class, 'updatedata']);
+    Route::get('services', [ManagingWorkersServiesController::class, 'index']);
 
    
     // Admin Routes

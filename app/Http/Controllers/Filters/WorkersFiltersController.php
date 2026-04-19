@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Filters;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Worker;
-use App\Http\Resources\WorkerResource;
 
 class WorkersFiltersController extends Controller
 {

@@ -11,9 +11,21 @@ use App\Http\Requests\UpdateServiceRequest;
 
 class ManagingWorkersServiesController extends Controller
 {
-        public function index()
+        public function index(Request $request)
     {
-        return ServiceResource::collection(Service::latest()->paginate(10));
+$query = Service::with('career');
+
+    if ($request->filled('career_id')) {
+        $request->validate([
+            'career_id' => 'exists:careers,id',
+        ]);
+
+        $query->where('career_id', $request->career_id);
+    }
+
+    return ServiceResource::collection(
+        $query->latest()->paginate(10)
+    );
     }
 
     public function store(StoreServiceRequest $request)
@@ -27,6 +39,7 @@ class ManagingWorkersServiesController extends Controller
     {
         return new ServiceResource($service);
     }
+
 
     public function update(UpdateServiceRequest $request, Service $service)
     {
