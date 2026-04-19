@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
+use App\Models\Address;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Auth\RegisterUserRequest;
+use App\Services\UserService;
+
 
 class RegisteredUserController extends Controller
 {
@@ -19,24 +24,15 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request): Response
-    {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'phone_number'=>['required'],
-            'birth_date'=>['required'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+    public function store(RegisterUserRequest $request, UserService $service)
+    {  // dd($request->validated());
+          $user = $service->register($request->validated());
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'birth_date' => $request->birth_date,
-            'phone_number' => $request->phone_number,
-            'password' => Hash::make($request->string('password')),
-        ]);
-
+         return response()->json([
+             'message' => 'User created successfully',
+             'user' => $user
+         ]);
+    
         event(new Registered($user));
 
         //Auth::login($user);

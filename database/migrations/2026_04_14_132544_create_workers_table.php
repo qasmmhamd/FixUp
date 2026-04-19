@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('workers', function (Blueprint $table) {
             $table->id();
              
-    $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-    $table->foreignId('career_id')->constrained()->cascadeOnDelete();
-    $table->text('about')->nullable();
-    $table->enum('status', [ 'active', 'blocked','waiting'])->default('waiting');
+          $table->foreignId('user_idco') ->constrained()->cascadeOnDelete()->unique();
+          $table->foreignId('career_id')->constrained()->cascadeOnDelete();
+          $table->text('about')->nullable();
+          $table->enum('status', [ 'active', 'blocked','waiting'])->default('waiting');
     $table->integer('years_experience')->nullable();
             $table->timestamps();
         });

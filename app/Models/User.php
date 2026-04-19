@@ -18,7 +18,8 @@ use Laravel\Sanctum\HasApiTokens;
         'phone_number',
         'profile_image',
         'role',
-        'birth_date',])]
+        'birth_date',
+        ])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -51,4 +52,5 @@ class User extends Authenticatable
     {
         return $this->hasMany(Address::class);
     }
+    
 }

@@ -20,7 +20,8 @@ class WorkerService
                 "about" => $data["about"] ?? null,
                 "years_experience" => $data["years_experience"] ?? null,
             ]);
-
+              $user->role = 'worker';
+                 $user->save();
             if (!empty($data['services'])) {
                 $worker->services()->sync($data['services']);
             }

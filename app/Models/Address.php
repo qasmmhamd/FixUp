@@ -8,13 +8,18 @@ class Address extends Model
 {
       protected $fillable = [
         'user_id',
-        'city',
-        'street',
-        'area',
+        'latitude',
+        'longitude',
+        'detailed_address',
+        'area_address_id',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+     public function areaAddress()
+    {
+        return $this->belongsTo(AreaAddresses::class);
     }
 }

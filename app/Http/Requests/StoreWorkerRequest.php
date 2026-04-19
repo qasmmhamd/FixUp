@@ -29,7 +29,7 @@ class StoreWorkerRequest extends FormRequest
         "status"=> "in:active,blocked,waiting",
         "services" => "nullable|array",
         "services.*" => "exists:services,id",
-
+        
         "images" => "nullable|array",
         "images.*" => "image|mimes:jpeg,png,jpg|max:2048",
        ];
