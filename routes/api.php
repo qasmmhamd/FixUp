@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardAdmin\ManagingWorkersController;
 use App\Http\Controllers\Filters\WorkersFiltersController;
 use App\Http\Controllers\DashboardAdmin\ManagingWorkersServiesController;
 use App\Http\Controllers\DashboardAdmin\ManagingCareersController;
+use App\Http\Controllers\DashboardAdmin\ManagingAreasController;
 
 // Authenticated User
 
@@ -33,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('workers/filters', [WorkersFiltersController::class, 'index']);
         Route::apiResource('services', ManagingWorkersServiesController::class);
         Route::apiResource('careers', ManagingCareersController::class);
+        Route::apiResource('areas', ManagingAreasController::class);
         
 
     });
