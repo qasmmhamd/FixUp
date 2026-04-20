@@ -10,6 +10,10 @@ use App\Http\Controllers\Filters\WorkersFiltersController;
 use App\Http\Controllers\DashboardAdmin\ManagingWorkersServiesController;
 use App\Http\Controllers\DashboardAdmin\ManagingCareersController;
 use App\Http\Controllers\DashboardAdmin\ManagingAreasController;
+use App\Http\Controllers\Profile\UserController;
+use App\Models\User;
+use App\Services\UpdateUserService;
+
 
 // Authenticated User
 
@@ -18,9 +22,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::put('/update-profile', [UserController::class, 'update']);
 
     Route::post('/register-worker', [RegisteredWorkersController::class, 'store']);
-    Route::apiResource('workers', ManagingWorkersController::class)->only(['index', 'show']);
+   // Route::apiResource('workers', ManagingWorkersController::class)->only(['index', 'show']);
     Route::post('/upgrade-account', [AccountUpgradeController::class, 'updatedata']);
     Route::get('services', [ManagingWorkersServiesController::class, 'index']);
 
