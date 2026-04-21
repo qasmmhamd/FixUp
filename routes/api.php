@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::get('/profile', [UserController::class, 'show']);
     Route::put('/update-profile', [UserController::class, 'update']);
 
     Route::post('/register-worker', [RegisteredWorkersController::class, 'store']);

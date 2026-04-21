@@ -20,6 +20,6 @@ class Address extends Model
     }
      public function areaAddress()
     {
-        return $this->belongsTo(AreaAddresses::class);
+        return $this->belongsTo(AreaAddress::class);
     }
 }
