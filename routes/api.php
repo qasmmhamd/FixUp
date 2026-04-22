@@ -19,6 +19,7 @@ use App\Http\Controllers\DashboardAdmin\ManagingWorkersController;
 use App\Http\Controllers\DashboardAdmin\ManagingWorkersServiesController;
 use App\Http\Controllers\Filters\WorkersFiltersController;
 use App\Http\Controllers\Profile\UserController;
+use App\Http\Controllers\Profile\WorkerController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -44,10 +45,14 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     
     // Get current user's complete profile
-    Route::get('/profile', [UserController::class, 'show']);
+    Route::get('/customer-profile', [UserController::class, 'show']);
+    Route::get('/worker-profile', [WorkerController::class, 'show']);
     
     // Update current user's profile information
-    Route::put('/update-profile', [UserController::class, 'update']);
+    Route::put('/update-customer-profile', [UserController::class, 'update']);
+    Route::put('/update-worker-profile', [WorkerController::class, 'updateProfile']);
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -82,7 +87,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('/worker', ManagingWorkersController::class);
         
         // Filter and search workers
-       // Route::get('workers/filters', [WorkersFiltersController::class, 'index']);
+       Route::get('workers/filters', [WorkersFiltersController::class, 'index']);
         
         /*
         |--------------------------------------------------------------------------

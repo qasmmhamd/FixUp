@@ -31,9 +31,12 @@ class WorkersFiltersController extends Controller
      */
     public function index(Request $request)
     {
+
         $workers = Worker::query()
             ->when($request->status, fn ($q) => $q->status($request->status))
             ->paginate(10);
+           $workers->load('user.address', 'career', 'services');
+
 
         return response()->json($workers);
     }

@@ -13,9 +13,17 @@ class LoginController extends Controller
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): array
-    {
+    {  
         $request->authenticate();
         $user = $request->user();
+        $user->load('address');
+         if ($user->role === 'worker') {
+
+        // تحميل worker مع علاقاته
+        $user->load([
+            'worker.career',
+            'worker.services',
+        ]);}
         $token = $user->createToken('main')->plainTextToken;
 
         return [

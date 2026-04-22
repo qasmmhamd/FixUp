@@ -40,8 +40,8 @@ class WorkerController extends Controller
      * @param Request $request The HTTP request with updated data
      * @return \Illuminate\Http\JsonResponse Updated worker profile
      */
-    public function update(Request $request)
-    {
+    public function updateProfile(Request $request)
+    {   
         $worker = $request->user()->worker;
         
         $validated = $request->validate([
