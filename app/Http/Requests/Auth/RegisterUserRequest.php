@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\User;
 use Illuminate\Validation\Rules;
+
 class RegisterUserRequest extends FormRequest
 {
     /**
@@ -27,8 +28,8 @@ class RegisterUserRequest extends FormRequest
             // user
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'phone_number'=> ['required', 'string', 'max:20'],
-            'birth_date'=> ['required', 'date'],
+            'phone_number' => ['required', 'string', 'max:20'],
+            'birth_date' => ['required', 'date'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
 
             // address

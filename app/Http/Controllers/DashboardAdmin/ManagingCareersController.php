@@ -3,15 +3,14 @@
 namespace App\Http\Controllers\DashboardAdmin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Career;
 use App\Http\Requests\StoreCareerRequest;
-use App\Http\Resources\CareerResource;
 use App\Http\Requests\UpdateCareerRequest;
+use App\Http\Resources\CareerResource;
+use App\Models\Career;
 
 class ManagingCareersController extends Controller
 {
-      public function index()
+    public function index()
     {
         return CareerResource::collection(Career::latest()->get());
     }
@@ -40,7 +39,7 @@ class ManagingCareersController extends Controller
         $career->delete();
 
         return response()->json([
-            'message' => 'Career deleted successfully'
+            'message' => 'Career deleted successfully',
         ]);
     }
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Rating extends Model
 {
-     protected $fillable = [
+    protected $fillable = [
         'user_id',
         'worker_id',
         'order_id',

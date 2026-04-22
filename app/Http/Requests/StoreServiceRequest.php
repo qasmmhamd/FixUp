@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class  StoreServiceRequest extends FormRequest
+class StoreServiceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class  StoreServiceRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-        'career_id' => 'required|exists:careers,id',
+            'career_id' => 'required|exists:careers,id',
         ];
     }
 }

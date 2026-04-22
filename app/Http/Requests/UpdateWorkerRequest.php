@@ -22,20 +22,20 @@ class UpdateWorkerRequest extends FormRequest
      */
     public function rules(): array
     {
-       return [
-        "career_id" => "sometimes|exists:careers,id",
-        "about" => "nullable|string",
-        "years_experience" => "nullable|integer|min:0",
-        "status" => "in:active,blocked,waiting",
+        return [
+            'career_id' => 'sometimes|exists:careers,id',
+            'about' => 'nullable|string',
+            'years_experience' => 'nullable|integer|min:0',
+            'status' => 'in:active,blocked,waiting',
 
-        "services" => "nullable|array",
-        "services.*" => "exists:services,id",
+            'services' => 'nullable|array',
+            'services.*' => 'exists:services,id',
 
-        "images" => "nullable|array",
-        "images.*" => "image|mimes:jpeg,png,jpg|max:2048",
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
 
-        "delete_images" => "nullable|array",
-        "delete_images.*" => "exists:images,id",
-      ];
+            'delete_images' => 'nullable|array',
+            'delete_images.*' => 'exists:images,id',
+        ];
     }
 }

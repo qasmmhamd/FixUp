@@ -6,13 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Image extends Model
 {
-      protected $fillable = [
+    protected $fillable = [
         'user_id',
         'order_id',
         'gallery_work_id',
         'path',
     ];
-
 
     public function user()
     {
@@ -28,10 +27,9 @@ class Image extends Model
     {
         return $this->belongsTo(GalleryWork::class);
     }
+
     public function worker()
     {
-          return $this->belongsTo(Worker::class);
+        return $this->belongsTo(Worker::class);
     }
-    
-    
 }

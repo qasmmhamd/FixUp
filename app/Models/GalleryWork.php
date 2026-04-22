@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class GalleryWork extends Model
 {
-        protected $fillable = [
+    protected $fillable = [
         'worker_id',
         'description',
     ];
@@ -20,5 +20,4 @@ class GalleryWork extends Model
     {
         return $this->hasMany(Image::class);
     }
-
 }

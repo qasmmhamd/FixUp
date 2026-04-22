@@ -3,29 +3,29 @@
 namespace App\Http\Controllers\DashboardAdmin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Service;
 use App\Http\Requests\StoreServiceRequest;
-use App\Http\Resources\ServiceResource;
 use App\Http\Requests\UpdateServiceRequest;
+use App\Http\Resources\ServiceResource;
+use App\Models\Service;
+use Illuminate\Http\Request;
 
 class ManagingWorkersServiesController extends Controller
 {
-        public function index(Request $request)
-    {
-$query = Service::with('career');
+    public function index(Request $request)
+    {   
+        $query = Service::with('career');
 
-    if ($request->filled('career_id')) {
-        $request->validate([
-            'career_id' => 'exists:careers,id',
-        ]);
+        if ($request->filled('career_id')) {
+            $request->validate([
+                'career_id' => 'exists:careers,id',
+            ]);
 
-        $query->where('career_id', $request->career_id);
-    }
+            $query->where('career_id', $request->career_id);
+        }
 
-    return ServiceResource::collection(
-        $query->latest()->paginate(10)
-    );
+        return ServiceResource::collection(
+            $query->latest()->paginate(10)
+        );
     }
 
     public function store(StoreServiceRequest $request)
@@ -40,7 +40,6 @@ $query = Service::with('career');
         return new ServiceResource($service);
     }
 
-
     public function update(UpdateServiceRequest $request, Service $service)
     {
         $service->update($request->validated());
@@ -53,8 +52,7 @@ $query = Service::with('career');
         $service->delete();
 
         return response()->json([
-            'message' => 'Service deleted successfully'
+            'message' => 'Service deleted successfully',
         ]);
     }
-
 }

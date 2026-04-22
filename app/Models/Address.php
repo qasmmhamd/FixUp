@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Address extends Model
 {
-      protected $fillable = [
+    protected $fillable = [
         'user_id',
         'latitude',
         'longitude',
@@ -18,7 +18,8 @@ class Address extends Model
     {
         return $this->belongsTo(User::class);
     }
-     public function areaAddress()
+
+    public function areaAddress()
     {
         return $this->belongsTo(AreaAddress::class);
     }

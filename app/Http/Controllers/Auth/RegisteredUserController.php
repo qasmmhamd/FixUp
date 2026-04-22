@@ -3,40 +3,40 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
-use Illuminate\Validation\ValidationException;
-use App\Models\Address;
-use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Services\UserService;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
-
+/**
+ * @class RegisteredUserController
+ * 
+ * Handles user registration operations for the FixUp application.
+ * This controller manages the registration of new customer accounts,
+ * including validation, user creation, and event triggering.
+ */
 class RegisteredUserController extends Controller
 {
     /**
      * Handle an incoming registration request.
      *
-     * @throws ValidationException
+     * @param RegisterUserRequest $request The validated registration request
+     * @param UserService $service The user service for business logic
+     * @return \Illuminate\Http\JsonResponse Registration response
+     * @throws ValidationException If validation fails
      */
     public function store(RegisterUserRequest $request, UserService $service)
-    {  // dd($request->validated());
-          $user = $service->register($request->validated());
+    { 
+        $user = $service->register($request->validated());
 
-         return response()->json([
-             'message' => 'User created successfully',
-             'user' => $user
-         ]);
-    
+        // Trigger registration event for email verification
         event(new Registered($user));
 
-        //Auth::login($user);
-
-        return response()->noContent();
+        return response()->json([
+            'message' => 'User created successfully',
+            'user' => $user,
+        ]);
     }
 }

@@ -4,10 +4,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Create static_messages table for system messages.
+ * 
+ * This migration creates the static_messages table which stores predefined
+ * system messages used throughout the FixUp application. These messages can include
+ * notifications, alerts, or any static text content needed by the system.
+ */
 return new class extends Migration
 {
     /**
      * Run the migrations.
+     * 
+     * @return void
      */
     public function up(): void
     {
@@ -20,6 +29,8 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+     * 
+     * @return void
      */
     public function down(): void
     {

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -16,12 +15,12 @@ class LoginController extends Controller
     public function store(LoginRequest $request): array
     {
         $request->authenticate();
-        $user=$request->user();
-        $token=$user->createToken('main')->plainTextToken;
+        $user = $request->user();
+        $token = $user->createToken('main')->plainTextToken;
 
-        return[
-            'token'=>$token,
-            'user'=>$user
+        return [
+            'token' => $token,
+            'user' => $user,
         ];
     }
 
@@ -30,7 +29,7 @@ class LoginController extends Controller
      */
     public function destroy(Request $request): Response
     {
-        $user=$request->user();
+        $user = $request->user();
         $user->currentAccessToken()->delete();
 
         return response()->noContent();

@@ -24,7 +24,7 @@ class UpdateServiceRequest extends FormRequest
     {
         return [
             'name' => 'sometimes|string|max:255',
-           'career_id' => 'sometimes|exists:careers,id',
+            'career_id' => 'sometimes|exists:careers,id',
         ];
     }
 }
