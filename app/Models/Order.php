@@ -6,25 +6,39 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    protected $fillable = [
+   protected $fillable = [
         'user_id',
-        'price',
-        'location',
         'description',
-        'priority',
         'status',
+        'expires_at',
+        'address_id',
+        'scheduled_at'
+            ];
+
+    protected $casts = [
+        'expires_at' => 'datetime',
+        'scheduled_at' => 'datetime',
+        'is_broadcast' => 'boolean',
     ];
+
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+     public function worker()
+    {
+        return $this->belongsTo(Worker::class);
     }
 
     public function services()
     {
         return $this->belongsToMany(Service::class);
     }
-
+      public function address()
+    {
+        return $this->belongsTo(Address::class);
+    }
     public function offers()
     {
         return $this->hasMany(PriceOffer::class);

@@ -23,6 +23,7 @@ use App\Http\Controllers\Profile\WorkerController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Order\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +52,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Update current user's profile information
     Route::put('/update-customer-profile', [UserController::class, 'update']);
     Route::put('/update-worker-profile', [WorkerController::class, 'updateProfile']);
+
+    Route::post('/order',[OrderController::class,'store']);
 
 
 

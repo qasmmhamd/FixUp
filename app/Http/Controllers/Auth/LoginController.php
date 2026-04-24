@@ -16,13 +16,14 @@ class LoginController extends Controller
     {  
         $request->authenticate();
         $user = $request->user();
-        $user->load('address');
+        $user->load('address.areaAddress');
          if ($user->role === 'worker') {
 
         // تحميل worker مع علاقاته
         $user->load([
             'worker.career',
             'worker.services',
+            
         ]);}
         $token = $user->createToken('main')->plainTextToken;
 
