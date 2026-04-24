@@ -36,7 +36,7 @@ class UpdateUserRequest extends FormRequest
             'phone_number' => ['sometimes', 'string', 'max:20'],
 
             // image
-            'profile_picture' => ['sometimes', 'image', 'mimes:jpg,jpeg,png'],
+            'profile_image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png'],
 
             // address
             'latitude' => ['sometimes', 'numeric'],

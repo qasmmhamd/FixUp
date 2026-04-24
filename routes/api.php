@@ -50,8 +50,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/worker-profile', [WorkerController::class, 'show']);
     
     // Update current user's profile information
-    Route::put('/update-customer-profile', [UserController::class, 'update']);
-    Route::put('/update-worker-profile', [WorkerController::class, 'updateProfile']);
+    Route::put('/update-user-profile', [UserController::class, 'update']);
+    Route::put('/update-worker-profile', [WorkerController::class, 'update']);
 
     Route::post('/order',[OrderController::class,'store']);
 

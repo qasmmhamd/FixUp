@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\Request;
 use App\Models\Address;
 use App\Models\Order;
+use App\Models\Image;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class OrderService
 {
@@ -17,7 +18,7 @@ class OrderService
             $addressId = $this->handleAddress($data, $user_id);
 
             // 🔹 إنشاء الطلب
-            $request = Order::create([
+            $order = Order::create([
                 'user_id' => $user_id,
                 'description' => $data['description'],
                 'address_id' => $addressId,
@@ -26,14 +27,28 @@ class OrderService
             ]);
 
             // 🔹 ربط الخدمات
-            $request->services()->attach($data['services']);
+            $order->services()->attach($data['services']);
+
+            // 🔹 رفع الصور
+            if (isset($data['images'])) {
+                foreach ($data['images'] as $image) {
+
+                    $path = $image->store('orders', 'public');
+
+                    Image::create([
+                        'order_id' => $order->id,
+                        'path' => $path,
+                    ]);
+                }
+            }
 
             // 🔹 تحميل العلاقات
-            return $request->load([
+            return $order->load([
                 'services',
                 'address',
                 'worker',
-                'user'
+                'user',
+                'images' // مهم لعرض الصور
             ]);
         });
     }
@@ -43,7 +58,6 @@ class OrderService
      */
     private function handleAddress(array $data, int $user_id): int
     {
-        // إذا عنوان جديد
         if (isset($data['address'])) {
             $address = Address::create([
                 'user_id' => $user_id,
@@ -56,7 +70,6 @@ class OrderService
             return $address->id;
         }
 
-        // إذا عنوان موجود
         return $data['address_id'];
     }
 }

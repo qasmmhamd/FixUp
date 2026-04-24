@@ -18,7 +18,7 @@ class UserController extends Controller
     }
 
     public function update(UpdateUserRequest $request, UpdateUserService $service)
-    {
+    {  
         $user = $service->update($request->user(), $request);
 
         return response()->json([

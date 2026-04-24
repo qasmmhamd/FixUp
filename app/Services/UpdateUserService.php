@@ -25,17 +25,17 @@ class UpdateUserService
             ])->toArray();
 
             // صورة
-            if ($request->hasFile('profile_picture')) {
+            if ($request->hasFile('profile_image')) {
 
                 if (
-                    $user->profile_picture &&
-                    Storage::disk('public')->exists($user->profile_picture)
+                    $user->profile_image &&
+                    Storage::disk('public')->exists($user->profile_image)
                 ) {
-                    Storage::disk('public')->delete($user->profile_picture);
+                    Storage::disk('public')->delete($user->profile_image);
                 }
 
-                $userData['profile_picture'] = $request
-                    ->file('profile_picture')
+                $userData['profile_image'] = $request
+                    ->file('profile_image')
                     ->store('images', 'public');
             }
 

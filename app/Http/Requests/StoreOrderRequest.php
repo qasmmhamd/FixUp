@@ -38,6 +38,9 @@ class StoreOrderRequest extends FormRequest
 
         'address' => ['nullable', 'array'],
 
+        'images' => ['nullable', 'array'],
+        'images.*' => ['image', 'mimes:jpg,jpeg,png', 'max:2048'],
+
         'address.latitude' => ['required_with:address', 'numeric'],
         'address.longitude' => ['required_with:address', 'numeric'],
         'address.detailed_address' => ['required_with:address', 'string'],
