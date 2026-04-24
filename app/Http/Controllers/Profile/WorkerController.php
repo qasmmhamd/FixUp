@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Resources\WorkerResource;
 use App\Models\Worker;
+use App\Http\Requests\UpdateWorkerProfileRequest;
+use App\Services\WorkerService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
 
 /**
  * @class WorkerController
@@ -16,45 +20,49 @@ use App\Models\Worker;
  */
 class WorkerController extends Controller
 {
-    /**
-     * Display the worker's profile information.
-     * 
-     * @param Request $request The HTTP request
-     * @return WorkerResource The worker profile resource
-     */
-    public function show(Request $request)
-    {
-        $worker = $request->user()->worker;
-        
-        return new WorkerResource($worker->load([
-            'user',
-            'career',
-            'services',
-            'images'
-        ]));
-    }
+   
+
+
+
+    public function __construct(
+        private WorkerService $workerService
+    ) {}
 
     /**
-     * Update the worker's profile information.
-     * 
-     * @param Request $request The HTTP request with updated data
-     * @return \Illuminate\Http\JsonResponse Updated worker profile
+     * تحديث بيانات العامل
      */
-    public function update(Request $request)
+    public function update(UpdateWorkerProfileRequest $request): JsonResponse
     {
-        $worker = $request->user()->worker;
-        
-        $validated = $request->validate([
-            'about' => 'nullable|string|max:1000',
-            'years_experience' => 'nullable|integer|min:0|max:50',
-            'status' => 'sometimes|in:active,inactive,pending',
-        ]);
-        
-        $worker->update($validated);
-        
+        $user = Auth::user();
+
+        // تأكد أن المستخدم عنده Worker
+        $worker = $user->worker;
+
+        if (! $worker) {
+            return response()->json([
+                'message' => 'Worker profile not found'
+            ], 404);
+        }
+
+        // البيانات
+        $data = $request->validated();
+
+        // الملفات (images)
+        $files = [
+            'images' => $request->file('images')
+        ];
+
+        $updatedWorker = $this->workerService->update(
+            $worker,
+            $data,
+            $files,
+            $user
+        );
+
         return response()->json([
-            'message' => 'Worker profile updated successfully',
-            'worker' => new WorkerResource($worker)
+            'message' => 'Worker updated successfully',
+            'data' => $updatedWorker
         ]);
     }
 }
+

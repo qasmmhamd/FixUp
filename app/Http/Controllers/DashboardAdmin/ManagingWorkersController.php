@@ -57,7 +57,7 @@ class ManagingWorkersController extends Controller
      * @throws AuthorizationException
      */
     public function update(UpdateWorkerRequest $request, Worker $worker, WorkerService $service)
-    {
+    {    
         $this->authorize('update', $worker);
 
         $worker = $service->update(

@@ -86,6 +86,7 @@ Route::middleware('auth:sanctum')->group(function () {
         |--------------------------------------------------------------------------
         */
         
+        
         // Full CRUD operations for workers
         Route::apiResource('/worker', ManagingWorkersController::class);
         
