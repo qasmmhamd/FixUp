@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Worker;
 
+
 class OrderService
 {
     public function create(array $data, int $user_id): Order
@@ -76,7 +77,7 @@ class OrderService
 
         return $data['address_id'];
     }
-    public function getMatchingOrdersForWorker(int $userId)
+  public function getMatchingOrdersForWorker(int $userId)
 {
     $worker = Worker::with('services')
         ->where('user_id', $userId)
@@ -88,6 +89,14 @@ class OrderService
         ->where('status', 'pending')
         ->whereHas('services', function ($query) use ($workerServiceIds) {
             $query->whereIn('services.id', $workerServiceIds);
-        })->get();
+        })
+        ->withCount('services')
+        ->withCount([
+            'services as matched_services_count' => function ($query) use ($workerServiceIds) {
+                $query->whereIn('services.id', $workerServiceIds);
+            }
+        ])
+        ->having('services_count', '=', DB::raw('matched_services_count'))
+        ->get();
 }
 }
