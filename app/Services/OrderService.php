@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Image;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Worker;
 
 class OrderService
 {
@@ -23,6 +24,8 @@ class OrderService
                 'description' => $data['description'],
                 'address_id' => $addressId,
                 'scheduled_at' => $data['scheduled_at'] ?? null,
+                'career_id' => $data['career_id'],
+                'priority' => $data['priority'] ?? false,
                 'expires_at' => now()->addHours(12),
             ]);
 
@@ -48,6 +51,7 @@ class OrderService
                 'address',
                 'worker',
                 'user',
+                'career',
                 'images' // مهم لعرض الصور
             ]);
         });
@@ -72,4 +76,18 @@ class OrderService
 
         return $data['address_id'];
     }
+    public function getMatchingOrdersForWorker(int $userId)
+{
+    $worker = Worker::with('services')
+        ->where('user_id', $userId)
+        ->firstOrFail();
+
+    $workerServiceIds = $worker->services->pluck('id');
+
+    return Order::where('career_id', $worker->career_id)
+        ->where('status', 'pending')
+        ->whereHas('services', function ($query) use ($workerServiceIds) {
+            $query->whereIn('services.id', $workerServiceIds);
+        })->get();
+}
 }

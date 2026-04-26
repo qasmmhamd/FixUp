@@ -41,6 +41,12 @@ class WorkerResource extends JsonResource
                 'id' => $this->career?->id,
                 'name' => $this->career?->name,
             ],
+            'images' => $this->images->map(function ($image) {
+              return [
+                'id' => $image->id,
+                'url' => asset('storage/' . $image->path),
+              ];
+            }),
 
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
         ];

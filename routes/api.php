@@ -24,6 +24,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Order\OrderController;
+use App\Http\Controllers\Order\WorkerOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,8 +47,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     
     // Get current user's complete profile
-    Route::get('/customer-profile', [UserController::class, 'show']);
-    Route::get('/worker-profile', [WorkerController::class, 'show']);
+    Route::get('/user-profile', [UserController::class, 'show']);
+    Route::get('/worker-profile', [WorkerController::class, 'index']);
     
     // Update current user's profile information
     Route::put('/update-user-profile', [UserController::class, 'update']);
@@ -67,8 +68,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/register-worker', [RegisteredWorkersController::class, 'store']);
     
    
-    // Get available services for workers
-
+    Route::middleware('role:worker')->group(function () {
+    Route::get('/worker/orders', [WorkerOrderController::class, 'workerOrders']);
+     });
     /*
     |--------------------------------------------------------------------------
     | Admin Routes

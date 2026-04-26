@@ -28,7 +28,7 @@ class StoreOrderRequest extends FormRequest
 
         'scheduled_at' => ['nullable', 'date', 'after:now'],
 
-
+        'priority' => ['required','boolean'],
 
         
         'services' => ['required', 'array', 'min:1'],
@@ -40,6 +40,8 @@ class StoreOrderRequest extends FormRequest
 
         'images' => ['nullable', 'array'],
         'images.*' => ['image', 'mimes:jpg,jpeg,png', 'max:2048'],
+
+        'career_id'=> ['required', 'exists:careers,id'],
 
         'address.latitude' => ['required_with:address', 'numeric'],
         'address.longitude' => ['required_with:address', 'numeric'],

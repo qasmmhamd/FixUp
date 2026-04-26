@@ -16,6 +16,7 @@ return new class extends Migration
 
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->text('description');
+            $table->boolean('priority')->default(false);
             $table->enum('status', [
                 'pending',
                 'accepted',
@@ -24,8 +25,11 @@ return new class extends Migration
                 'cancelled'
             ])->default('pending');
             $table->timestamp('expires_at');
-
+            
             $table->foreignId('address_id')->nullable()->constrained()->nullOnDelete();
+
+            $table->foreignId('career_id')->constrained()->cascadeOnDelete();
+
 
             $table->timestamp('scheduled_at')->nullable();
 

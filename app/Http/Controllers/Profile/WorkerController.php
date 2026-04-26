@@ -21,13 +21,16 @@ use Illuminate\Http\JsonResponse;
 class WorkerController extends Controller
 {
    
-
-
-
     public function __construct(
         private WorkerService $workerService
     ) {}
+     
+    public function index()
+{
+    $workers = Worker::with(['user', 'career', 'images'])->get();
 
+    return WorkerResource::collection($workers);
+}
     /**
      * تحديث بيانات العامل
      */

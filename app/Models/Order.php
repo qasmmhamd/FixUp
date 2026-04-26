@@ -12,6 +12,8 @@ class Order extends Model
         'status',
         'expires_at',
         'address_id',
+        'career_id',
+        'priority',
         'scheduled_at'
             ];
 
@@ -56,5 +58,9 @@ class Order extends Model
     public function images()
 {
     return $this->hasMany(Image::class);
+}
+public function career()
+{
+    return $this->belongsTo(Career::class);
 }
 }
