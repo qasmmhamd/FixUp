@@ -11,6 +11,7 @@
 |
 */
 
+use App\Http\Controllers\Api\PriceOfferController as ApiPriceOfferController;
 use App\Http\Controllers\Auth\AccountUpgradeController;
 use App\Http\Controllers\Auth\RegisteredWorkersController;
 use App\Http\Controllers\DashboardAdmin\ManagingAreasController;
@@ -25,6 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Order\WorkerOrderController;
+use App\Http\Controllers\Order\PriceOfferController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,7 +71,11 @@ Route::middleware('auth:sanctum')->group(function () {
     
    
     Route::middleware('role:worker')->group(function () {
+        // Get orders that match the worker's services and career
     Route::get('/worker/orders', [WorkerOrderController::class, 'workerOrders']);
+
+        // Create a price offer for an order
+        Route::post('/price-offers', [PriceOfferController::class, 'store']);
      });
     /*
     |--------------------------------------------------------------------------
