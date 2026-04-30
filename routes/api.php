@@ -57,7 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/update-worker-profile', [WorkerController::class, 'update']);
 
     Route::post('/order',[OrderController::class,'store']);
-
+    Route::get('/orders/{orderId}/price-offers', [PriceOfferController::class, 'index']);
 
 
     /*

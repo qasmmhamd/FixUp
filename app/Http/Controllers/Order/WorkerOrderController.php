@@ -17,10 +17,17 @@ public function __construct(OrderService $orderService)
 }
 public function workerOrders()
 {
-    $orders = $this->orderService->getMatchingOrdersForWorker(Auth::user()->id);
+    $order = $this->orderService->getMatchingOrdersForWorker(Auth::user()->id);
+     $order->load( [
+            'career',
+            'services',
+            'images',
+            'address.areaAddress'
+
+            ]);
 
     return response()->json([
-        'data' => $orders
+        'data' => $order
     ]);
 }
 }

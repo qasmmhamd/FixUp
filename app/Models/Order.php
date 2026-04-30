@@ -63,4 +63,9 @@ public function career()
 {
     return $this->belongsTo(Career::class);
 }
+public function priceOffers()
+{
+    return $this->hasMany(PriceOffer::class);
+}
+
 }

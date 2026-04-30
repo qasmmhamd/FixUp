@@ -23,6 +23,7 @@ class LoginController extends Controller
         $user->load([
             'worker.career',
             'worker.services',
+            'worker.images',
             
         ]);}
         $token = $user->createToken('main')->plainTextToken;

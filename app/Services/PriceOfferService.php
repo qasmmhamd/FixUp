@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\PriceOffer;
 use App\Models\Worker;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Order;
 
 class PriceOfferService
 {
@@ -19,5 +20,14 @@ class PriceOfferService
             'price'      => $data['price'],
             'status'     => 'pending',
         ]);
+    }
+    
+          public function getOrderWithOffers(int $orderId, int $userId)
+    {
+        return Order::with('priceOffers')
+            ->where('id', $orderId)
+            ->where('user_id', $userId)
+            ->where('user_id', $userId)
+            ->firstOrFail();
     }
 }

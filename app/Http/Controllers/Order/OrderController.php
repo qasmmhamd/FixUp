@@ -21,6 +21,8 @@ class OrderController extends Controller
             $request->validated(),
             $request->user()->id
         );
+       
+
 
         return response()->json([
             'message' => 'Order created successfully',
