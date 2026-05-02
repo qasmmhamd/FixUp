@@ -8,3 +8,6 @@ Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 Route::get('/', function () {
     return ['Laravel' => app()->version()];
 });
+Route::get('/fcm-test', function () {
+    return view('fcm-test');
+});

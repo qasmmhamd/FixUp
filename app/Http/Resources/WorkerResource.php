@@ -25,30 +25,53 @@ class WorkerResource extends JsonResource
         return [
             'id' => $this->id,
 
-            'about' => $this->about,
-            'status' => $this->status,
-            'years_experience' => $this->years_experience,
+        'about' => $this->about,
+        'status' => $this->status,
+        'years_experience' => $this->years_experience,
 
-            // بيانات المستخدم
-            'user' => [
-                'id' => $this->user?->id,
-                'name' => $this->user?->name,
-                'profile_image' => $this->user?->profile_image_url,
-            ],
+        // user + address
+        'user' => [
+            'id' => $this->user?->id,
+            'name' => $this->user?->name,
+            'profile_image' => $this->user?->profile_image_url,
 
-            // المهنة
-            'career' => [
-                'id' => $this->career?->id,
-                'name' => $this->career?->name,
+             'address' => [
+                'latitude' => $this->address?->latitude,
+                'longitude' => $this->address?->longitude,
+                'detailed_address' => $this->address?->detailed_address,
+
+                'area_address' => [
+                    'id' => $this->address?->areaAddress?->id,
+                    'area_name' => $this->address?->areaAddress?->area_name,
+                ],
             ],
-            'images' => $this->images->map(function ($image) {
-              return [
+           
+
+        ],
+
+        // career
+        'career' => [
+            'id' => $this->career?->id,
+            'name' => $this->career?->name,
+        ],
+
+        // ✅ أضف هذا (كان ناقص)
+        'services' => $this->services->map(function ($service) {
+            return [
+                'id' => $service->id,
+                'name' => $service->name,
+            ];
+        }),
+
+        // images
+        'images' => $this->images->map(function ($image) {
+            return [
                 'id' => $image->id,
                 'url' => asset('storage/' . $image->path),
-              ];
-            }),
+            ];
+        }),
 
-            'created_at' => $this->created_at?->format('Y-m-d H:i'),
-        ];
+        'created_at' => $this->created_at?->format('Y-m-d H:i'),
+    ];
     }
 }

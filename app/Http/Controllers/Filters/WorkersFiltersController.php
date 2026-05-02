@@ -35,7 +35,7 @@ class WorkersFiltersController extends Controller
         $workers = Worker::query()
             ->when($request->status, fn ($q) => $q->status($request->status))
             ->paginate(10);
-           $workers->load('user.address', 'career', 'services');
+           $workers->load('user.address', 'career', 'services', 'images');
 
 
         return response()->json($workers);

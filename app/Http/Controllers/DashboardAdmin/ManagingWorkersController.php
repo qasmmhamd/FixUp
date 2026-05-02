@@ -12,6 +12,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
+
+
 /**
  * @class ManagingWorkersController
  *
@@ -30,10 +32,13 @@ class ManagingWorkersController extends Controller
      */
     public function index()
     {
-        $workers = Worker::with(['user', 'career'])->latest()->paginate(10);
+        $workers = Worker::with(['user.address.areaAddress', 'career', 'services', 'images'])->latest()->paginate(10);
 
-        return WorkerResource::collection($workers);
-    }
+
+
+        return response()->json($workers);
+   }
+   
 
     /**
      * Display a specific worker's details.
@@ -43,7 +48,8 @@ class ManagingWorkersController extends Controller
      */
     public function show(Worker $worker)
     {
-        return new WorkerResource($worker->load(['user', 'career']));
+        return new WorkerResource($worker->load(['user.address.areaAddress', 'career', 'services', 'images']));
+        
     }
 
     /**
@@ -66,6 +72,7 @@ class ManagingWorkersController extends Controller
             $request->allFiles(),
             $request->user()
         );
+        
 
         return response()->json([
             'message' => 'Worker updated successfully',

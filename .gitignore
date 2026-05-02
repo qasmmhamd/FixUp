@@ -25,3 +25,4 @@ Homestead.yaml
 Thumbs.db
 /storage/logs/*
 /bootstrap/cache/*
+storage/firebase/firebase.json

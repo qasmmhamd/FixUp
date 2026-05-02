@@ -26,7 +26,7 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained()->cascadeOnDelete();
             $table->decimal('price', 10, 2);
             $table->string('time_range');
-            $table->string('status')->default('pending');
+            $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
             $table->timestamps();
         });
     }

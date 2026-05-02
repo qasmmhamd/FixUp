@@ -6,6 +6,7 @@ use App\Models\PriceOffer;
 use App\Models\Worker;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
+use App\Notifications\NewPriceOfferNotification;
 
 class PriceOfferService
 {
@@ -13,13 +14,22 @@ class PriceOfferService
     {
         $worker = Worker::where('user_id', Auth::id())->firstOrFail();
 
-        return PriceOffer::create([
-            'order_id'   => $data['order_id'],
-            'worker_id'  => $worker->id,
-            'time_range' => $data['time_range'],
-            'price'      => $data['price'],
-            'status'     => 'pending',
+         $offer = PriceOffer::create([
+        'order_id'   => $data['order_id'],
+        'worker_id'  => $worker->id,
+        'time_range' => $data['time_range'],
+        'price'      => $data['price'],
+        'status'     => 'pending',
         ]);
+
+        $offer->load('order.user');
+
+        $offer->order->user->notify(
+        new NewPriceOfferNotification($offer)
+    );
+
+    return $offer;
+
     }
     
           public function getOrderWithOffers(int $orderId, int $userId)

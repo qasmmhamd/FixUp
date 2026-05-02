@@ -27,6 +27,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Order\WorkerOrderController;
 use App\Http\Controllers\Order\PriceOfferController;
+use App\Http\Controllers\Notification\NotificationPriceOfferController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -58,8 +60,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/order',[OrderController::class,'store']);
     Route::get('/orders/{orderId}/price-offers', [PriceOfferController::class, 'index']);
-
-
+    Route::get('/notifications/price-offers', [NotificationPriceOfferController::class, 'index']);
+    Route::get('/notifications/price-offers/unread', [NotificationPriceOfferController::class, 'unread']);
     /*
     |--------------------------------------------------------------------------
     | Worker Registration Routes
@@ -144,5 +146,7 @@ Route::middleware('auth:sanctum')->group(function () {
  Route::get('services', [ManagingWorkersServiesController::class, 'index']);
  Route::get('careers', [ManagingCareersController::class,'index']);
  Route::get('areas', [ManagingAreasController::class,'index']);
+ Route::get('/test-token', [NotificationPriceOfferController::class, 'testToken']);
+ Route::get('/test-fcm', [NotificationPriceOfferController::class, 'sendNotification']);
 
 require __DIR__ . '/auth.php';
