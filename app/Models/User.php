@@ -11,6 +11,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Collection;
+use App\Models\Order;
+
 
 #[Fillable([ 'name',
         'email',
@@ -21,6 +24,9 @@ use Laravel\Sanctum\HasApiTokens;
         'birth_date',
         ])]
 #[Hidden(['password', 'remember_token'])]
+/**
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Order[] $orders
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -43,6 +49,7 @@ class User extends Authenticatable
         return $this->hasOne(Worker::class);
     }
 
+   
     public function orders()
     {
         return $this->hasMany(Order::class);

@@ -67,5 +67,9 @@ public function priceOffers()
 {
     return $this->hasMany(PriceOffer::class);
 }
+public function scopeActive($query)
+{
+    return $query->where('expires_at', '>', now());
+}
 
 }

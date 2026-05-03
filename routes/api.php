@@ -60,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/order',[OrderController::class,'store']);
     Route::get('/orders/{orderId}/price-offers', [PriceOfferController::class, 'index']);
+    Route::get('/costmer-orders', [OrderController::class, 'index']);
     Route::get('/notifications/price-offers', [NotificationPriceOfferController::class, 'index']);
     Route::get('/notifications/price-offers/unread', [NotificationPriceOfferController::class, 'unread']);
     /*
