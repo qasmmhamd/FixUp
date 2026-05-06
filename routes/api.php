@@ -28,7 +28,8 @@ use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Order\WorkerOrderController;
 use App\Http\Controllers\Order\PriceOfferController;
 use App\Http\Controllers\Notification\NotificationPriceOfferController;
-
+use App\Http\Controllers\Notification\DeviceController;
+use App\Models\PriceOffer;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,8 +62,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/order',[OrderController::class,'store']);
     Route::get('/orders/{orderId}/price-offers', [PriceOfferController::class, 'index']);
     Route::get('/costmer-orders', [OrderController::class, 'index']);
-    Route::get('/notifications/price-offers', [NotificationPriceOfferController::class, 'index']);
-    Route::get('/notifications/price-offers/unread', [NotificationPriceOfferController::class, 'unread']);
+   // Route::get('/notifications/price-offers', [NotificationPriceOfferController::class, 'index']);
+   // Route::get('/notifications/price-offers/unread', [NotificationPriceOfferController::class, 'unread']);
+   Route::get('/notifications_price-offers', [PriceOfferController::class, 'notifications']);
+   Route::get('/notifications_orders', [OrderController::class, 'notifications']);
+    Route::post('/device-register', [DeviceController::class, 'store']);
     /*
     |--------------------------------------------------------------------------
     | Worker Registration Routes
@@ -148,6 +152,36 @@ Route::middleware('auth:sanctum')->group(function () {
  Route::get('careers', [ManagingCareersController::class,'index']);
  Route::get('areas', [ManagingAreasController::class,'index']);
  Route::get('/test-token', [NotificationPriceOfferController::class, 'testToken']);
- Route::get('/test-fcm', [NotificationPriceOfferController::class, 'sendNotification']);
+ //Route::get('/test-fcm', [NotificationPriceOfferController::class, 'sendNotification']);
+
+
+
+
+ Route::post('/test-fcm', function (Request $request) {
+
+     $user = User::find($request->user_id);
+
+    if (!$user || !$user->fcm_token) {
+        return response()->json([
+            'error' => 'User not found or fcm_token is null'
+        ], 400);
+    }
+
+    return app(\App\Services\FcmService::class)->send(
+        $user->fcm_token,
+        "Test Notification 🔥",
+        "هذا إشعار تجريبي من Postman",
+        ["type" => "test"]
+    );
+
+});
+Route::get('/debug-token', function () {
+    $user = User::first();
+
+    return [
+        'user' => $user,
+        'fcm_token' => $user?->fcm_token
+    ];
+});
 
 require __DIR__ . '/auth.php';

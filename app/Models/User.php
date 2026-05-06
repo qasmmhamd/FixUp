@@ -63,5 +63,22 @@ class User extends Authenticatable
 {
     return $this->hasMany(Image::class);
 }
+    public function notifications()
+{
+    return $this->hasMany(Notification::class);
+}
+// ========================
+    // 🔥 IMPORTANT: DEVICE TOKENS
+    // ========================
+
+    public function devices()
+    {
+        return $this->hasMany(UserDevice::class);
+    }
+
+    public function routeNotificationForFcm()
+    {
+        return $this->devices()->pluck('fcm_token')->toArray();
+    }
     
 }

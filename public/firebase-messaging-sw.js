@@ -10,3 +10,15 @@ firebase.initializeApp({
 });
 
 const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage((payload) => {
+  console.log("BG message:", payload);
+
+  const title = payload.notification?.title || "New Notification";
+  const body = payload.notification?.body || "";
+
+  self.registration.showNotification(title, {
+    body,
+    icon: "/icon.png"
+  });
+});

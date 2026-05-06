@@ -16,6 +16,7 @@ return new class extends Migration
                 $table->string('phone_number')->nullable();
                 $table->string('profile_image')->nullable();
                 $table->date('birth_date')->nullable();
+                $table->text('fcm_token')->nullable();
                 $table->enum('role', [ 'customer', 'worker','admin'])->default('customer');
 
         });

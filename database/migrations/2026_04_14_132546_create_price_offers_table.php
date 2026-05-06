@@ -27,6 +27,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->string('time_range');
             $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
+             $table->unique(['worker_id', 'order_id']);
             $table->timestamps();
         });
     }
