@@ -321,4 +321,26 @@ class OrderService
             );
         }
     }
+     public function getMatchingOrdersForWorker(int $userId)
+{
+    $worker = Worker::with('services')
+        ->where('user_id', $userId)
+        ->firstOrFail();
+
+    $workerServiceIds = $worker->services->pluck('id');
+
+    return Order::where('career_id', $worker->career_id)
+        ->where('status', 'pending')
+        ->whereHas('services', function ($query) use ($workerServiceIds) {
+            $query->whereIn('services.id', $workerServiceIds);
+        })
+        ->withCount('services')
+        ->withCount([
+            'services as matched_services_count' => function ($query) use ($workerServiceIds) {
+                $query->whereIn('services.id', $workerServiceIds);
+            }
+        ])
+        ->having('services_count', '=', DB::raw('matched_services_count'))
+        ->get();
+}
 }
