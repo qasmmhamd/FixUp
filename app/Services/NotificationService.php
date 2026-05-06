@@ -40,7 +40,7 @@ use Illuminate\Support\Facades\Log;
 class NotificationService
 {
     public function send($user, $title, $body, $type, $data = [])
-    {
+    {Log::info('CALLED');
         if (!$user) {
             Log::warning('Notification skipped: user is null');
             return;
