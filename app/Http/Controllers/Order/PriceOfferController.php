@@ -111,4 +111,14 @@ class PriceOfferController extends Controller
             'message' => 'Test notification sent'
         ]);
     }
+    public function notifications()
+{
+    return response()->json([
+        'data' => Auth::user()
+            ->notifications()
+            ->where('type', 'price_offer')
+            ->latest()
+            ->get()
+    ]);
+}
 }
