@@ -62,13 +62,24 @@ class GuidedConversationService
     }
 
     // جلب الرسائل حسب الموضوع
-    public function getTemplatesForConversation($conversationId)
-    {
-        $conversation = Conversation::findOrFail($conversationId);
+    public function getTemplatesForConversation($conversationId, $userId)
+{
+    $conversation = Conversation::findOrFail($conversationId);
 
-        return MessageTemplate::where(
-            'topic',
-            $conversation->topic
-        )->get();
+    // حماية المحادثة
+    if (
+        $conversation->customer_id != $userId &&
+        $conversation->worker_id != $userId
+    ) {
+        abort(403, 'Unauthorized');
+    }
+
+    // جلب جميع رسائل المحادثة
+    return ChatMessage::where(
+        'conversation_id',
+        $conversationId
+    )
+    ->orderBy('created_at', 'asc')
+    ->get();
     }
 }

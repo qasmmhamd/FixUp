@@ -59,9 +59,15 @@ class GuidedConversationController extends Controller
     // جلب الرسائل حسب موضوع المحادثة
     public function templates($conversationId)
     {
-        return response()->json(
-            $this->guidedConversationService
-                ->getTemplatesForConversation($conversationId)
+        $messages = $this->guidedConversationService
+        ->getTemplatesForConversation(
+            $conversationId,
+            Auth::id()
         );
+
+    return response()->json([
+        'success' => true,
+        'messages' => $messages
+    ]);
     }
 }
