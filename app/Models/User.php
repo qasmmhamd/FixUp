@@ -80,5 +80,14 @@ class User extends Authenticatable
     {
         return $this->devices()->pluck('fcm_token')->toArray();
     }
+    public function conversationsAsCustomer()
+{
+    return $this->hasMany(Conversation::class, 'customer_id');
+}
+
+public function conversationsAsWorker()
+{
+    return $this->hasMany(Conversation::class, 'worker_id');
+}
     
 }

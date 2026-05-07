@@ -29,6 +29,7 @@ use App\Http\Controllers\Order\WorkerOrderController;
 use App\Http\Controllers\Order\PriceOfferController;
 use App\Http\Controllers\Notification\NotificationPriceOfferController;
 use App\Http\Controllers\Notification\DeviceController;
+use App\Http\Controllers\Chat\GuidedConversationController;
 use App\Models\PriceOffer;
 
 /*
@@ -67,6 +68,13 @@ Route::middleware('auth:sanctum')->group(function () {
    Route::get('/notifications_price-offers', [PriceOfferController::class, 'notifications']);
    Route::get('/notifications_orders', [OrderController::class, 'notifications']);
     Route::post('/device-register', [DeviceController::class, 'store']);
+
+//
+     Route::post('/conversations', [GuidedConversationController::class, 'create']);
+    Route::post('/chat/send', [GuidedConversationController::class, 'send']);
+    Route::get('/chat/templates/{conversationId}', [GuidedConversationController::class, 'templates']);
+
+
     /*
     |--------------------------------------------------------------------------
     | Worker Registration Routes

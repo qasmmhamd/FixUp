@@ -1,35 +1,4 @@
 <?php
-/*
-
-namespace App\Services;
-
-class NotificationService
-{
-    public function send($user, $title, $body, $type, $data = [])
-    {
-        // 🔹 تخزين في DB
-        \App\Models\Notification::create([
-            'user_id' => $user->id,
-            'title' => $title,
-            'body' => $body,
-            'type' => $type,
-            'data' => $data,
-        ]);
-
-        // 🔹 إرسال FCM
-        if (!empty($user->fcm_token)) {
-
-            app(FcmService::class)->send(
-                $user->fcm_token,
-                $title,
-                $body,
-                array_merge($data, [
-                    'type' => $type
-                ])
-            );
-        }
-    }
-}|*/
 
 namespace App\Services;
 

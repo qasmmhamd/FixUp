@@ -1,32 +1,4 @@
 <?php
-/*
-namespace App\Services;
-
-use Illuminate\Support\Facades\Http;
-
-class FcmService
-{
-    public function send($fcmToken, $title, $body, $data = [])
-    {
-        $accessToken = (new FirebaseService())->getAccessToken();
-
-        $response = Http::withToken($accessToken)->post(
-            "https://fcm.googleapis.com/v1/projects/fixup-c687c/messages:send",
-            [
-                "message" => [
-                    "token" => $fcmToken,
-                    "notification" => [
-                        "title" => $title,
-                        "body" => $body
-                    ],
-                    "data" => $data
-                ]
-            ]
-        );
-
-        return $response->json();
-    }
-}*/
 
 namespace App\Services;
 
