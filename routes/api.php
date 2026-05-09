@@ -30,6 +30,7 @@ use App\Http\Controllers\Order\PriceOfferController;
 use App\Http\Controllers\Notification\NotificationPriceOfferController;
 use App\Http\Controllers\Notification\DeviceController;
 use App\Http\Controllers\Chat\GuidedConversationController;
+use App\Http\Controllers\Chat\AiChatController;
 use App\Models\PriceOffer;
 
 /*
@@ -73,8 +74,12 @@ Route::middleware('auth:sanctum')->group(function () {
      Route::post('/conversations', [GuidedConversationController::class, 'create']);
     Route::post('/chat/send', [GuidedConversationController::class, 'send']);
     Route::get('/chat/templates/{conversationId}', [GuidedConversationController::class, 'templates']);
+    Route::post('/ai-chat', [AiChatController::class, 'ask']);
+    Route::get('/ai-chat/messages',[AiChatController::class, 'messages']);
+   // Route::post('/test-openai', function () {
+   // return Http::get('https://api.openai.com')->status()});
 
-
+     
     /*
     |--------------------------------------------------------------------------
     | Worker Registration Routes
@@ -190,6 +195,13 @@ Route::get('/debug-token', function () {
         'user' => $user,
         'fcm_token' => $user?->fcm_token
     ];
+});
+
+
+Route::get('/test-cert', function () {
+    dd(file_exists(
+        'C:\laragon\bin\php\php-8.3.0-Win32-vs16-x64\extras\ssl\cacert.pem'
+    ));
 });
 
 require __DIR__ . '/auth.php';
