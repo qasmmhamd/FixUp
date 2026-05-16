@@ -76,8 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/chat/templates/{conversationId}', [GuidedConversationController::class, 'templates']);
     Route::post('/ai-chat', [AiChatController::class, 'ask']);
     Route::get('/ai-chat/messages',[AiChatController::class, 'messages']);
-   // Route::post('/test-openai', function () {
-   // return Http::get('https://api.openai.com')->status()});
+    
 
      
     /*
@@ -198,10 +197,6 @@ Route::get('/debug-token', function () {
 });
 
 
-Route::get('/test-cert', function () {
-    dd(file_exists(
-        'C:\laragon\bin\php\php-8.3.0-Win32-vs16-x64\extras\ssl\cacert.pem'
-    ));
-});
+
 
 require __DIR__ . '/auth.php';

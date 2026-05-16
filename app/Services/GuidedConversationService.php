@@ -6,18 +6,42 @@ use App\Events\MessageSent;
 use App\Models\ChatMessage;
 use App\Models\Conversation;
 use App\Models\MessageTemplate;
+use App\Models\PriceOffer;
 
 class GuidedConversationService
 {
     // إنشاء المحادثة
     public function createConversation($customerId, $workerId, $topic)
     {
-        return Conversation::create([
-            'customer_id' => $customerId,
-            'worker_id' => $workerId,
-            'topic' => $topic,
-            'status' => 'open',
+         $conversation = Conversation::create([
+        'customer_id' => $customerId,
+        'worker_id'   => $workerId,
+        'topic'       => $topic,
+        'status'      => 'open',
+    ]);
+
+    /*
+    |---------------------------------------------------------------
+    | ربط المحادثة مع عرض السعر
+    |---------------------------------------------------------------
+    | نبحث عن آخر PriceOffer بين نفس العامل والطلب المفتوح لهذا العميل
+    | ثم نحدّث conversation_id فيه.
+    */
+    $priceOffer =PriceOffer::where('worker_id', $workerId)
+        ->whereHas('order', function ($query) use ($customerId) {
+              $query->where('user_id', $customerId);
+        })
+        ->whereNull('conversation_id')
+        ->latest()
+        ->first();
+
+    if ($priceOffer) {
+        $priceOffer->update([
+            'conversation_id' => $conversation->id,
         ]);
+    }
+
+    return $conversation;
     }
 
     // إرسال رسالة
