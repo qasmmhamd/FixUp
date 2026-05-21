@@ -46,6 +46,25 @@ class PriceOfferController extends Controller
         ]);
     }
 
+    public function myOffers()
+{
+    return response()->json([
+        'status' => true,
+        'data' => $this->service->getWorkerOffers(
+            Auth::id()
+        )
+    ]);
+}
+    public function acceptedOffers()
+{
+    
+    return response()->json([
+        'status' => true,
+        'data' => $this->service->getAcceptedOffers(
+            Auth::id()
+        )
+    ]);
+}
     /**
      * 🧪 Test notification (مهم للاختبار)
      */

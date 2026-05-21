@@ -91,8 +91,9 @@ Route::middleware('auth:sanctum')->group(function () {
    
     Route::middleware('role:worker')->group(function () {
         // Get orders that match the worker's services and career
-    Route::get('/worker/orders', [WorkerOrderController::class, 'workerOrders']);
-
+        Route::get('/worker/orders', [WorkerOrderController::class, 'workerOrders']);
+        Route::get('/worker/offers', [PriceOfferController::class, 'myOffers']);
+        Route::get('/worker/offers/accepted',[PriceOfferController::class, 'acceptedOffers']);
         // Create a price offer for an order
         Route::post('/price-offers', [PriceOfferController::class, 'store']);
      });
