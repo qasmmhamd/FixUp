@@ -8,16 +8,19 @@ use App\Models\Conversation;
 use App\Models\MessageTemplate;
 use App\Models\PriceOffer;
 use App\Models\Worker as WorkerModel;
+use App\Http\Requests\StoreMessageTemplateRequest;
+use App\Models\MessageTopic;
+use App\Http\Requests\StoreMessageTopicRequest;
 
 class GuidedConversationService
 {
     // إنشاء المحادثة
-    public function createConversation($customerId, $workerId, $topic)
+    public function createConversation($customerId, $workerId, $topic_id)
     {
          $conversation = Conversation::create([
         'customer_id' => $customerId,
         'worker_id'   => $workerId,
-        'topic'       => $topic,
+        'topic_id'    => $topic_id,
         'status'      => 'open',
     ]);
 
@@ -65,7 +68,7 @@ class GuidedConversationService
         $template = MessageTemplate::findOrFail($templateId);
 
         // فقط رسائل نفس الموضوع
-        if ($template->topic!== $conversation->topic) {
+        if ($template->topic_id !== $conversation->topic_id) {
             throw new \Exception('Invalid template');
         }
 
@@ -108,4 +111,81 @@ if (!$isCustomer && !$isWorker) {
     ->orderBy('created_at', 'asc')
     ->get();
     }
+
+    public function storeMessageTemplate(
+        StoreMessageTemplateRequest $request
+    ) {
+        $template = MessageTemplate::create(
+            $request->validated()
+        );
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Message template created successfully',
+            'data' => $template
+        ], 201);
+    }
+    public function getTemplates(
+    ?string $topic = null,
+    ?string $senderType = null
+) {
+    return MessageTemplate::query()
+
+        ->when($topic, function ($q) use ($topic) {
+
+            $q->where(
+                'topic_id',
+                $topic
+            );
+        })
+
+        ->when($senderType, function ($q) use ($senderType) {
+
+            $q->where(
+                'sender_type',
+                $senderType
+            );
+        })
+
+        ->latest()
+        ->get();
+}
+  public function storeTopic(
+        StoreMessageTopicRequest $request
+    ) {
+        return MessageTopic::create([
+            'topic' => $request->topic
+        ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | عرض جميع المواضيع
+    |--------------------------------------------------------------------------
+    */
+
+    public function topics()
+    {
+        return MessageTopic::latest()->get();
+    }
+    public function deleteTopic(int $id)
+{
+    $topic = MessageTopic::findOrFail($id);
+
+    $topic->delete();
+
+    return true;
+}
+public function updateTopic(
+    int $id,
+    array $data
+) {
+    $topic = MessageTopic::findOrFail($id);
+
+    $topic->update([
+        'topic' => $data['topic']
+    ]);
+
+    return $topic;
+}
 }

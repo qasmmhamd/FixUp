@@ -20,7 +20,10 @@ return new class extends Migration
                 ->constrained('workers')
                 ->cascadeOnDelete();
 
-            $table->string('topic'); // plumbing electrical cleaning
+            $table->foreignId('topic_id')
+             ->constrained('message_topics')
+             ->cascadeOnDelete();
+
 
             $table->string('status')->default('open');
             $table->timestamps();

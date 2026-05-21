@@ -31,6 +31,7 @@ use App\Http\Controllers\Notification\NotificationPriceOfferController;
 use App\Http\Controllers\Notification\DeviceController;
 use App\Http\Controllers\Chat\GuidedConversationController;
 use App\Http\Controllers\Chat\AiChatController;
+use App\Http\Controllers\Chat\MessageTemplateController;
 use App\Models\PriceOffer;
 
 /*
@@ -56,6 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Get current user's complete profile
     Route::get('/user-profile', [UserController::class, 'show']);
     Route::get('/worker-profile', [WorkerController::class, 'index']);
+
     
     // Update current user's profile information
     Route::put('/update-user-profile', [UserController::class, 'update']);
@@ -71,12 +73,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/device-register', [DeviceController::class, 'store']);
 
 //
-     Route::post('/conversations', [GuidedConversationController::class, 'create']);
+    Route::post('/conversations', [GuidedConversationController::class, 'create']);
     Route::post('/chat/send', [GuidedConversationController::class, 'send']);
     Route::get('/chat/templates/{conversationId}', [GuidedConversationController::class, 'templates']);
     Route::post('/ai-chat', [AiChatController::class, 'ask']);
     Route::get('/ai-chat/messages',[AiChatController::class, 'messages']);
-    
+    Route::get('/message-templates',[MessageTemplateController::class, 'index']);
+    Route::get('/Topics',[MessageTemplateController::class, 'topics']);
+
 
      
     /*
@@ -114,12 +118,15 @@ Route::middleware('auth:sanctum')->group(function () {
         |--------------------------------------------------------------------------
         */
         
-        
+        Route::post('/message-templates', [MessageTemplateController::class, 'store']);
+        Route::post('/message-topics', [MessageTemplateController::class, 'storeTopic']);
+        Route::put('/message-topics/{id}', [MessageTemplateController::class, 'updateTopic']);
+        Route::delete('/message-topics/{id}', [MessageTemplateController::class, 'destroyTopic']);
         // Full CRUD operations for workers
         Route::apiResource('/worker', ManagingWorkersController::class);
         
         // Filter and search workers
-       Route::get('workers/filters', [WorkersFiltersController::class, 'index']);
+       Route::get('/workers/filters', [WorkersFiltersController::class, 'index']);
         
         /*
         |--------------------------------------------------------------------------
@@ -128,7 +135,7 @@ Route::middleware('auth:sanctum')->group(function () {
         */
         
         // Full CRUD operations for services
-        Route::apiResource('services', ManagingWorkersServiesController::class);
+        Route::apiResource('/services', ManagingWorkersServiesController::class);
         
         /*
         |--------------------------------------------------------------------------
@@ -137,7 +144,7 @@ Route::middleware('auth:sanctum')->group(function () {
         */
         
         // Full CRUD operations for careers/professions
-        Route::apiResource('careers', ManagingCareersController::class);
+        Route::apiResource('/careers', ManagingCareersController::class);
         
         /*
         |--------------------------------------------------------------------------
@@ -146,7 +153,7 @@ Route::middleware('auth:sanctum')->group(function () {
         */
         
         // Full CRUD operations for geographical areas
-        Route::apiResource('areas', ManagingAreasController::class);
+        Route::apiResource('/areas', ManagingAreasController::class);
 
     });
 
@@ -161,9 +168,9 @@ Route::middleware('auth:sanctum')->group(function () {
 | from the separate auth.php file for better organization.
 |
 */
- Route::get('services', [ManagingWorkersServiesController::class, 'index']);
- Route::get('careers', [ManagingCareersController::class,'index']);
- Route::get('areas', [ManagingAreasController::class,'index']);
+ Route::get('/services', [ManagingWorkersServiesController::class, 'index']);
+ Route::get('/careers', [ManagingCareersController::class,'index']);
+ Route::get('/areas', [ManagingAreasController::class,'index']);
  Route::get('/test-token', [NotificationPriceOfferController::class, 'testToken']);
  //Route::get('/test-fcm', [NotificationPriceOfferController::class, 'sendNotification']);
 

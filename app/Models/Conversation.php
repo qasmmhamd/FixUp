@@ -45,4 +45,8 @@ class Conversation extends Model
     {
         return $this->belongsTo(Worker::class, 'worker_id');
     }
+        public function topic()
+    {
+        return $this->belongsTo(MessageTopic::class,'topic_id');
+    }
 }

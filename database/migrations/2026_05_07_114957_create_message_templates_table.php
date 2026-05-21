@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text('text');
             $table->enum('sender_type', ['customer', 'worker']);
-            $table->string('topic');
+            $table->foreignId('topic_id')->constrained('message_topics')->cascadeOnDelete();
             $table->timestamps();
         });
     }
