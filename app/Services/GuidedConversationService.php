@@ -50,12 +50,12 @@ class GuidedConversationService
         $conversation = Conversation::findOrFail($conversationId);
 
         // منع غير المشاركين
-        if (
-            $conversation->customer_id != $userId &&
-            $conversation->worker_id != $userId
-        ) {
-            throw new \Exception('Unauthorized');
-        }
+       if (
+    $conversation->customer_id != $userId &&
+    $conversation->worker->user_id != $userId
+) {
+    throw new \Exception('Unauthorized');
+}
 
         if ($conversation->status === 'closed') {
             throw new \Exception('Conversation closed');
