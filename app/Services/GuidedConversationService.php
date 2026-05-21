@@ -150,6 +150,14 @@ if (!$isCustomer && !$isWorker) {
         ->latest()
         ->get();
 }
+public function deleteTemplate(int $id)
+{
+    $topic = MessageTemplate::findOrFail($id);
+
+    $topic->delete();
+
+    return true;
+}
   public function storeTopic(
         StoreMessageTopicRequest $request
     ) {

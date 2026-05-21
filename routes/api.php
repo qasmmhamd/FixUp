@@ -119,6 +119,7 @@ Route::middleware('auth:sanctum')->group(function () {
         */
         
         Route::post('/message-templates', [MessageTemplateController::class, 'store']);
+        Route::delete('/message-templates/{id}', [MessageTemplateController::class, 'destroyTemplate']);
         Route::post('/message-topics', [MessageTemplateController::class, 'storeTopic']);
         Route::put('/message-topics/{id}', [MessageTemplateController::class, 'updateTopic']);
         Route::delete('/message-topics/{id}', [MessageTemplateController::class, 'destroyTopic']);

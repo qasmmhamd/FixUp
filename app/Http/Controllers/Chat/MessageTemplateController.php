@@ -57,6 +57,15 @@ class MessageTemplateController extends Controller
 
         ], 201);
     }
+    public function destroyTemplate(int $id)
+{
+    $this->service->deleteTemplate($id);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Template deleted successfully'
+    ]);
+}
 
     /*
     |--------------------------------------------------------------------------
