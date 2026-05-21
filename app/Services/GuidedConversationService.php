@@ -7,6 +7,7 @@ use App\Models\ChatMessage;
 use App\Models\Conversation;
 use App\Models\MessageTemplate;
 use App\Models\PriceOffer;
+use App\Models\Worker as WorkerModel;
 
 class GuidedConversationService
 {
@@ -91,14 +92,15 @@ class GuidedConversationService
     $conversation = Conversation::findOrFail($conversationId);
 
     // حماية المحادثة
-    if (
-        $conversation->customer_id != $userId &&
-        $conversation->worker_id != $userId
-    ) {
-        abort(403, 'Unauthorized');
-    }
+  $worker = WorkerModel::where('user_id', $userId)->first();
 
-    // جلب جميع رسائل المحادثة
+$isCustomer = $conversation->customer_id == $userId;
+
+$isWorker = $worker && $conversation->worker_id == $worker->id;
+
+if (!$isCustomer && !$isWorker) {
+    abort(403, 'Unauthorized');
+}
     return ChatMessage::where(
         'conversation_id',
         $conversationId
