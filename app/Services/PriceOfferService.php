@@ -129,7 +129,8 @@ class PriceOfferService
 
         return PriceOffer::with([
             'order',
-            'order.user'
+            'order.user',
+            'order.address.areaAddress'
             
         ])
         ->where(
