@@ -13,6 +13,9 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
+    'firebase' => [
+    'credentials' => env('FIREBASE_CREDENTIALS'),
+],
 
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),

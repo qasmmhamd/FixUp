@@ -204,6 +204,9 @@ Route::get('/debug-token', function () {
         'fcm_token' => $user?->fcm_token
     ];
 });
+Route::get('/me-test', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
 
 
 

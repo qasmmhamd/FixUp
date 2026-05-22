@@ -8,7 +8,7 @@ class FirebaseService
 {
     public function getAccessToken()
     {
-        $jsonKey = json_decode(file_get_contents(storage_path('app/firebase/firebase.json')), true);
+        $jsonKey = json_decode(file_get_contents(storage_path('app/firebase/firebase-service-account.json')), true);
 
         $now = time();
 

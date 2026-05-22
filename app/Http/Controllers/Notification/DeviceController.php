@@ -4,29 +4,38 @@ namespace App\Http\Controllers\Notification;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\UserDevice;
 
 class DeviceController extends Controller
 {
     public function store(Request $request)
     {
-        $request->validate([
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
+
+        $validated = $request->validate([
             'fcm_token' => 'required|string',
             'device_type' => 'nullable|string',
         ]);
 
-        \App\Models\UserDevice::updateOrCreate(
+        $device = UserDevice::updateOrCreate(
             [
-                'user_id' => Auth::id(),
-                'fcm_token' => $request->fcm_token,
+                'user_id' => $user->id,
+                'fcm_token' => $validated['fcm_token'],
             ],
             [
-                'device_type' => $request->device_type,
+                'device_type' => $validated['device_type'] ?? 'unknown',
             ]
         );
 
         return response()->json([
-            'message' => 'Device saved successfully'
+            'message' => 'Device saved successfully',
+            'data' => $device,
         ]);
     }
 }
