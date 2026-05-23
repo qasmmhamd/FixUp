@@ -21,13 +21,13 @@ class GuidedConversationController extends Controller
     {
         $request->validate([
             'worker_id' => 'required|exists:workers,id',
-            'topic' => 'required|string',
+            'topic_id' => 'required|exists:message_topics,id',
         ]);
 
         $conversation = $this->guidedConversationService->createConversation(
             Auth::id(),
             $request->worker_id,
-            $request->topic
+            $request->topic_id
         );
 
         return response()->json([

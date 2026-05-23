@@ -9,7 +9,7 @@ class Conversation extends Model
     protected $fillable = [
         'customer_id',
         'worker_id',
-        'topic',
+        'topic_id',
         'status',
     ];
 
