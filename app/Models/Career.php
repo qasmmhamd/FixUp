@@ -39,4 +39,10 @@ class Career extends Model
     {
         return $this->hasMany(Service::class);
     }
+    
+    public function jobFeeRule()
+    {
+        return $this->hasOne(JobFeeRule::class);
+    }
+
 }

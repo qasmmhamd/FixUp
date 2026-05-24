@@ -30,7 +30,7 @@ class OrderController extends Controller
     public function index()
     {
         return Auth::user()
-            ->orders()
+            ->order()
             ->with(['services', 'address', 'offers', 'images'])
             ->latest()
             ->get();

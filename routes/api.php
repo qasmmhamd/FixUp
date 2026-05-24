@@ -32,6 +32,11 @@ use App\Http\Controllers\Notification\DeviceController;
 use App\Http\Controllers\Chat\GuidedConversationController;
 use App\Http\Controllers\Chat\AiChatController;
 use App\Http\Controllers\Chat\MessageTemplateController;
+use App\Http\Controllers\Wallet\AdminWalletController;
+use App\Http\Controllers\Wallet\WorkerWalletController;
+use App\Http\Controllers\Wallet\JobFeeController;
+use App\Http\Controllers\Wallet\AcceptPriceOfferController;
+
 use App\Models\PriceOffer;
 
 /*
@@ -82,7 +87,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/Topics',[MessageTemplateController::class, 'topics']);
 
 
-     
+    Route::post('/orders/{orderId}/offers/{offerId}/accept', [AcceptPriceOfferController::class,'accept']); 
+
+
     /*
     |--------------------------------------------------------------------------
     | Worker Registration Routes
@@ -100,6 +107,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/worker/offers/accepted',[PriceOfferController::class, 'acceptedOffers']);
         // Create a price offer for an order
         Route::post('/price-offers', [PriceOfferController::class, 'store']);
+
+
+        Route::get('/worker/wallet', [WorkerWalletController::class, 'wallet']);
+        Route::get('/worker/wallet/transactions', [WorkerWalletController::class, 'transactions']);
      });
     /*
     |--------------------------------------------------------------------------
@@ -146,6 +157,12 @@ Route::middleware('auth:sanctum')->group(function () {
         
         // Full CRUD operations for careers/professions
         Route::apiResource('/careers', ManagingCareersController::class);
+
+
+          Route::post('/wallet/topup/{workerId}', [AdminWalletController::class, 'topUp']);
+
+        Route::post('/wallet/job-fees', [JobFeeController::class, 'store']);
+        Route::put('/wallet/job-fees/{id}', [JobFeeController::class, 'update']);
         
         /*
         |--------------------------------------------------------------------------

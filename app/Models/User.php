@@ -89,5 +89,9 @@ public function conversationsAsWorker()
 {
     return $this->hasMany(Conversation::class, 'worker_id');
 }
+public function wallet()
+{
+    return $this->hasOne(Wallet::class, 'user_id', 'id');
+}
     
 }
