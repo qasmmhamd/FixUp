@@ -9,104 +9,223 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * @class WorkerService
- * 
+ * --------------------------------------------------------------------------
+ * WorkerService
+ * --------------------------------------------------------------------------
+ *
  * Handles business logic for worker profile management in the FixUp system.
- * This service manages worker creation, updates, image uploads, and related
- * operations while maintaining data integrity through database transactions.
+ * Responsible for creating and updating worker profiles, managing services,
+ * and handling image uploads/deletions while ensuring data consistency.
  */
 class WorkerService
 {
     /**
-     * Create a new worker profile with associated data.
-     * 
-     * @param array $data The worker profile data
-     * @param array $files Uploaded files (images)
-     * @param User $user The user creating the worker profile
-     * @return Worker The created worker with loaded relationships
+     * ----------------------------------------------------------------------
+     * Create Worker Profile
+     * ----------------------------------------------------------------------
+     *
+     * Creates a new worker profile, assigns role to user, syncs services,
+     * and uploads related images within a database transaction.
+     *
+     * @param array $data
+     * @param array $files
+     * @param User $user
+     *
+     * @return Worker
      */
-    public function create(array $data, $files, $user)
-    {
-        return DB::transaction(function () use ($data, $files, $user) {
+    public function create(
+        array $data,
+        $files,
+        $user
+    ) {
+
+        return DB::transaction(function () use (
+            $data,
+            $files,
+            $user
+        ) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Create Worker
+            |--------------------------------------------------------------------------
+            */
 
             $worker = Worker::create([
-                'user_id' => $user->id,
-                'status' => $data['status'] ?? 'waiting',
-                'career_id' => $data['career_id'],
-                'about' => $data['about'] ?? null,
+                'user_id'          => $user->id,
+                'status'           => $data['status'] ?? 'waiting',
+                'career_id'        => $data['career_id'],
+                'about'            => $data['about'] ?? null,
                 'years_experience' => $data['years_experience'] ?? null,
             ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Assign Role To User
+            |--------------------------------------------------------------------------
+            */
+
             $user->role = 'worker';
             $user->save();
-            if (! empty($data['services'])) {
-                $worker->services()->sync($data['services']);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Sync Services
+            |--------------------------------------------------------------------------
+            */
+
+            if (!empty($data['services'])) {
+
+                $worker->services()->sync(
+                    $data['services']
+                );
             }
 
-            if (! empty($files['images'])) {
-                $this->uploadImages($worker, $files['images'], $user);
+            /*
+            |--------------------------------------------------------------------------
+            | Upload Images
+            |--------------------------------------------------------------------------
+            */
+
+            if (!empty($files['images'])) {
+
+                $this->uploadImages(
+                    $worker,
+                    $files['images'],
+                    $user
+                );
             }
 
-            return $worker->load('services', 'images');
+            return $worker->load(
+                'services',
+                'images'
+            );
         });
     }
 
     /**
-     * Update an existing worker profile.
-     * 
-     * @param Worker $worker The worker to update
-     * @param array $data The updated worker data
-     * @param array $files Uploaded files (new images)
-     * @param User $user The user performing the update
-     * @return Worker The updated worker with loaded relationships
+     * ----------------------------------------------------------------------
+     * Update Worker Profile
+     * ----------------------------------------------------------------------
+     *
+     * Updates worker details, services, and manages image lifecycle
+     * (upload + deletion) within a transaction.
+     *
+     * @param Worker $worker
+     * @param array $data
+     * @param array $files
+     * @param User $user
+     *
+     * @return Worker
      */
-    public function update(Worker $worker, array $data, $files, $user)
-    {
-        return DB::transaction(function () use ($worker, $data, $files, $user) {
+    public function update(
+        Worker $worker,
+        array $data,
+        $files,
+        $user
+    ) {
+
+        return DB::transaction(function () use (
+            $worker,
+            $data,
+            $files,
+            $user
+        ) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Update Worker Data
+            |--------------------------------------------------------------------------
+            */
 
             $worker->update([
-                'career_id' => $data['career_id'] ?? $worker->career_id,
-                'about' => $data['about'] ?? $worker->about,
+                'career_id'        => $data['career_id'] ?? $worker->career_id,
+                'about'            => $data['about'] ?? $worker->about,
                 'years_experience' => $data['years_experience'] ?? $worker->years_experience,
-                'status' => $data['status'] ?? $worker->status,
+                'status'           => $data['status'] ?? $worker->status,
             ]);
 
+            /*
+            |--------------------------------------------------------------------------
+            | Sync Services
+            |--------------------------------------------------------------------------
+            */
+
             if (isset($data['services'])) {
-                $worker->services()->sync($data['services']);
+
+                $worker->services()->sync(
+                    $data['services']
+                );
             }
 
-            // حذف صور
-            if (! empty($data['delete_images'])) {
-                $this->deleteImages($worker, $data['delete_images']);
+            /*
+            |--------------------------------------------------------------------------
+            | Delete Images
+            |--------------------------------------------------------------------------
+            */
+
+            if (!empty($data['delete_images'])) {
+
+                $this->deleteImages(
+                    $worker,
+                    $data['delete_images']
+                );
             }
 
-            // رفع صور جديدة
-            if (! empty($files['images'])) {
-                $this->uploadImages($worker, $files['images'], $user);
+            /*
+            |--------------------------------------------------------------------------
+            | Upload New Images
+            |--------------------------------------------------------------------------
+            */
+
+            if (!empty($files['images'])) {
+
+                $this->uploadImages(
+                    $worker,
+                    $files['images'],
+                    $user
+                );
             }
 
-            return $worker->load('services', 'images');
+            return $worker->load(
+                'services',
+                'images'
+            );
         });
     }
 
     /**
-     * Upload and store images for a worker profile.
-     * 
-     * @param Worker $worker The worker profile
-     * @param array $images The uploaded image files
-     * @param User $user The user uploading the images
+     * ----------------------------------------------------------------------
+     * Upload Worker Images
+     * ----------------------------------------------------------------------
+     *
+     * Stores uploaded images in filesystem and inserts records in database.
+     *
+     * @param Worker $worker
+     * @param array $images
+     * @param User $user
+     *
      * @return void
      */
-    private function uploadImages($worker, $images, $user)
-    {
+    private function uploadImages(
+        Worker $worker,
+        $images,
+        User $user
+    ): void {
+
         $data = [];
 
         foreach ($images as $file) {
-            $path = $file->store('workers', 'public');
+
+            $path = $file->store(
+                'workers',
+                'public'
+            );
 
             $data[] = [
-                'user_id' => $user->id,
-                'worker_id' => $worker->id,
-                'path' => $path,
+                'user_id'    => $user->id,
+                'worker_id'  => $worker->id,
+                'path'       => $path,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -116,20 +235,38 @@ class WorkerService
     }
 
     /**
-     * Delete worker images from storage and database.
-     * 
-     * @param Worker $worker The worker profile
-     * @param array $ids The image IDs to delete
+     * ----------------------------------------------------------------------
+     * Delete Worker Images
+     * ----------------------------------------------------------------------
+     *
+     * Removes images from storage and database safely.
+     *
+     * @param Worker $worker
+     * @param array $ids
+     *
      * @return void
      */
-    private function deleteImages($worker, $ids)
-    {
-        $images = Image::whereIn('id', $ids)
-            ->where('worker_id', $worker->id)
+    private function deleteImages(
+        Worker $worker,
+        array $ids
+    ): void {
+
+        $images = Image::whereIn(
+                'id',
+                $ids
+            )
+            ->where(
+                'worker_id',
+                $worker->id
+            )
             ->get();
 
         foreach ($images as $img) {
-            Storage::disk('public')->delete($img->path);
+
+            Storage::disk('public')->delete(
+                $img->path
+            );
+
             $img->delete();
         }
     }

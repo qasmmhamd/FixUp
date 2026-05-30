@@ -23,7 +23,7 @@ return new class extends Migration
     $table->enum('status', ['active', 'suspended'])->default('active');
 
     $table->timestamps();
-});
+    });
     }
 
     /**

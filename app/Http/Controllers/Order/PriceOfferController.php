@@ -5,72 +5,133 @@ namespace App\Http\Controllers\Order;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePriceOfferRequest;
 use App\Services\PriceOfferService;
+use App\Services\NotificationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class PriceOfferController
+ *
+ * Handles price offer operations:
+ * - Creating offers (worker side)
+ * - Viewing offers (customer & worker)
+ * - Filtering accepted offers
+ * - Notifications related to offers
+ * - Testing notification system
+ */
 class PriceOfferController extends Controller
 {
+    /**
+     * Price offer service instance.
+     *
+     * @var PriceOfferService
+     */
     public function __construct(
         private PriceOfferService $service
     ) {}
 
     /**
-     * 🔥 إنشاء عرض سعر
+     * Create a new price offer.
+     *
+     * @param StorePriceOfferRequest $request
+     * @return JsonResponse
      */
-    public function store(StorePriceOfferRequest $request)
+    public function store(StorePriceOfferRequest $request): JsonResponse
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Create Offer
+        |--------------------------------------------------------------------------
+        */
+
         $offer = $this->service->create(
             $request->validated()
         );
 
+        /*
+        |--------------------------------------------------------------------------
+        | Response
+        |--------------------------------------------------------------------------
+        */
+
         return response()->json([
-            'status' => true,
+            'status'  => true,
             'message' => 'Offer created successfully',
-            'data' => $offer
+            'data'    => $offer
         ], 201);
     }
 
     /**
-     * 🔥 عرض عروض السعر الخاصة بالزبون (مؤمّن)
+     * Get price offers for a specific order (customer side).
+     *
+     * @param int $orderId
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function index($orderId, Request $request)
+    public function index(int $orderId, Request $request): JsonResponse
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Fetch Order With Offers
+        |--------------------------------------------------------------------------
+        */
+
         $order = $this->service->getOrderWithOffers(
             $orderId,
             Auth::id()
         );
 
+        /*
+        |--------------------------------------------------------------------------
+        | Response
+        |--------------------------------------------------------------------------
+        */
+
         return response()->json([
-            'order_id' => $order->id,
+            'order_id'     => $order->id,
             'price_offers' => $order->priceOffers()->latest()->get()
         ]);
     }
 
-    public function myOffers()
-{
-    return response()->json([
-        'status' => true,
-        'data' => $this->service->getWorkerOffers(
-            Auth::id()
-        )
-    ]);
-}
-    public function acceptedOffers()
-{
-    
-    return response()->json([
-        'status' => true,
-        'data' => $this->service->getAcceptedOffers(
-            Auth::id()
-        )
-    ]);
-}
     /**
-     * 🧪 Test notification (مهم للاختبار)
+     * Get all offers for authenticated worker.
+     *
+     * @return JsonResponse
      */
-    public function test()
+    public function myOffers(): JsonResponse
     {
-        app(\App\Services\NotificationService::class)->send(
+        return response()->json([
+            'status' => true,
+            'data'   => $this->service->getWorkerOffers(
+                Auth::id()
+            )
+        ]);
+    }
+
+    /**
+     * Get accepted offers for worker.
+     *
+     * @return JsonResponse
+     */
+    public function acceptedOffers(): JsonResponse
+    {
+        return response()->json([
+            'status' => true,
+            'data'   => $this->service->getAcceptedOffers(
+                Auth::id()
+            )
+        ]);
+    }
+
+    /**
+     * Test notification system (debug).
+     *
+     * @return JsonResponse
+     */
+    public function test(): JsonResponse
+    {
+        app(NotificationService::class)->send(
             Auth::user(),
             "Test Offer 🔥",
             "Testing price offer notification system",
@@ -84,14 +145,20 @@ class PriceOfferController extends Controller
             'message' => 'Test notification sent'
         ]);
     }
-    public function notifications()
-{
-    return response()->json([
-        'data' => Auth::user()
-            ->notifications()
-            ->where('type', 'price_offer')
-            ->latest()
-            ->get()
-    ]);
-}
+
+    /**
+     * Get price offer notifications for authenticated user.
+     *
+     * @return JsonResponse
+     */
+    public function notifications(): JsonResponse
+    {
+        return response()->json([
+            'data' => Auth::user()
+                ->notifications()
+                ->where('type', 'price_offer')
+                ->latest()
+                ->get()
+        ]);
+    }
 }

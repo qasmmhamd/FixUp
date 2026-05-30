@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\SendNotificationJob;
 use App\Models\Order;
 use App\Models\Worker;
 use App\Models\PriceOffer;
@@ -15,48 +16,76 @@ class PriceOfferService
 
     /*
     |--------------------------------------------------------------------------
-    | إنشاء عرض سعر
+    | Create Price Offer
     |--------------------------------------------------------------------------
     */
 
     public function create(array $data)
     {
-        $worker = Worker::where(
-            'user_id',
-            Auth::id()
-        )->firstOrFail();
+        /*
+        |----------------------------------------------------------------------
+        | Get Worker
+        |----------------------------------------------------------------------
+        */
 
-        // منع التكرار
-        $existingOffer = PriceOffer::where(
-            'order_id',
-            $data['order_id']
-        )
-        ->where(
-            'worker_id',
-            $worker->id
-        )
-        ->first();
+        $worker = Worker::query()
+            ->select('id')
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        /*
+        |----------------------------------------------------------------------
+        | Prevent Duplicate Offers
+        |----------------------------------------------------------------------
+        */
+
+        $existingOffer = PriceOffer::query()
+            ->where('order_id', $data['order_id'])
+            ->where('worker_id', $worker->id)
+            ->exists();
 
         if ($existingOffer) {
 
-            abort(400, 'لقد قمت بإرسال عرض لهذا الطلب مسبقًا');
+            abort(
+                400,
+                'لقد قمت بإرسال عرض لهذا الطلب مسبقًا'
+            );
         }
 
-        // إنشاء العرض
-        $offer = PriceOffer::create([
-            'order_id'   => $data['order_id'],
-            'worker_id'  => $worker->id,
-            'time_range' => $data['time_range'],
-            'price'      => $data['price'],
-            'status'     => 'pending',
-        ]);
+        /*
+        |----------------------------------------------------------------------
+        | Create Offer
+        |----------------------------------------------------------------------
+        */
 
-        $offer->load('order.user');
+        $offer = PriceOffer::query()
+            ->create([
+                'order_id'   => $data['order_id'],
+                'worker_id'  => $worker->id,
+                'time_range' => $data['time_range'],
+                'price'      => $data['price'],
+                'status'     => 'pending',
+            ]);
 
-        $customer = $offer->order->user;
+        /*
+        |----------------------------------------------------------------------
+        | Get Customer
+        |----------------------------------------------------------------------
+        */
 
-        // إرسال إشعار
-        $this->notificationService->send(
+        $customer = Order::query()
+            ->with('user:id')
+            ->select('id', 'user_id')
+            ->findOrFail($offer->order_id)
+            ->user;
+
+        /*
+        |----------------------------------------------------------------------
+        | Send Notification In Background
+        |----------------------------------------------------------------------
+        */
+
+        SendNotificationJob::dispatch(
             $customer,
             "عرض سعر جديد 💰",
             "تم إرسال عرض سعر لطلبك",
@@ -72,7 +101,7 @@ class PriceOfferService
 
     /*
     |--------------------------------------------------------------------------
-    | عرض عروض الطلب لصاحب الطلب
+    | Get Order With Offers (Customer View)
     |--------------------------------------------------------------------------
     */
 
@@ -80,68 +109,64 @@ class PriceOfferService
         int $orderId,
         int $userId
     ) {
-        return Order::with([
-            'priceOffers.worker'
-        ])
-        ->where('id', $orderId)
-        ->where('user_id', $userId)
-        ->firstOrFail();
+
+        return Order::query()
+            ->with([
+                'priceOffers.worker'
+            ])
+            ->where('id', $orderId)
+            ->where('user_id', $userId)
+            ->firstOrFail();
     }
 
     /*
     |--------------------------------------------------------------------------
-    | جميع عروض العامل
+    | Get Worker Offers
     |--------------------------------------------------------------------------
     */
 
     public function getWorkerOffers(
         int $userId
     ) {
-        $worker = Worker::where(
-            'user_id',
-            $userId
-        )->firstOrFail();
 
-        return PriceOffer::with([
-            'order',
-        ])
-        ->where(
-            'worker_id',
-            $worker->id
-        )
-        ->latest()
-        ->get();
+        $worker = Worker::query()
+            ->select('id')
+            ->where('user_id', $userId)
+            ->firstOrFail();
+
+        return PriceOffer::query()
+            ->with([
+                'order'
+            ])
+            ->where('worker_id', $worker->id)
+            ->latest()
+            ->get();
     }
 
     /*
     |--------------------------------------------------------------------------
-    | العروض المقبولة فقط
+    | Get Accepted Offers
     |--------------------------------------------------------------------------
     */
 
     public function getAcceptedOffers(
         int $userId
     ) {
-        $worker = Worker::where(
-            'user_id',
-            $userId
-        )->firstOrFail();
 
-        return PriceOffer::with([
-            'order',
-            'order.user',
-            'order.address.areaAddress'
-            
-        ])
-        ->where(
-            'worker_id',
-            $worker->id
-        )
-        ->where(
-            'status',
-            'accepted'
-        )
-        ->latest()
-        ->get();
+        $worker = Worker::query()
+            ->select('id')
+            ->where('user_id', $userId)
+            ->firstOrFail();
+
+        return PriceOffer::query()
+            ->with([
+                'order',
+                'order.user',
+                'order.address.areaAddress'
+            ])
+            ->where('worker_id', $worker->id)
+            ->where('status', 'accepted')
+            ->latest()
+            ->get();
     }
 }

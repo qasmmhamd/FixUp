@@ -1,58 +1,131 @@
 <?php
 
-
 namespace App\Http\Controllers\Order;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Services\OrderService;
+use App\Services\NotificationService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class OrderController
+ *
+ * Handles order lifecycle operations:
+ * - Creating orders
+ * - Listing user orders
+ * - Fetching notifications
+ * - Testing notification system
+ */
 class OrderController extends Controller
 {
+    /**
+     * Order service instance.
+     *
+     * @var OrderService
+     */
     public function __construct(
         private OrderService $orderService
     ) {}
 
-    public function store(StoreOrderRequest $request)
+    /**
+     * Create a new order.
+     *
+     * @param StoreOrderRequest $request
+     * @return JsonResponse
+     */
+    public function store(StoreOrderRequest $request): JsonResponse
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Create Order
+        |--------------------------------------------------------------------------
+        */
+
         $order = $this->orderService->create(
             $request->validated(),
             Auth::id()
         );
 
+        /*
+        |--------------------------------------------------------------------------
+        | Response
+        |--------------------------------------------------------------------------
+        */
+
         return response()->json([
             'message' => 'Order created successfully',
-            'data' => $order
+            'data'    => $order
         ], 201);
     }
 
-    public function index()
+    /**
+     * Get authenticated user orders.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function index(Request $request): JsonResponse
     {
-        return Auth::user()
-            ->orders()
-            ->with(['services', 'address', 'offers', 'images'])
-            ->latest()
-            ->get();
+        /*
+        |--------------------------------------------------------------------------
+        | Fetch Orders
+        |--------------------------------------------------------------------------
+        */
+
+        return response()->json([
+            'data' => $this->orderService->getUserOrders(
+                Auth::id(),
+                $request->status
+            )
+        ]);
     }
 
     /**
-     * 🔥 Notifications (DB only)
+     * Get user notifications.
+     *
+     * @return JsonResponse
      */
-    public function notifications()
+    public function notifications(): JsonResponse
     {
-        return Auth::user()
+        /*
+        |--------------------------------------------------------------------------
+        | Fetch Notifications
+        |--------------------------------------------------------------------------
+        */
+
+        $notifications = Auth::user()
             ->notifications()
             ->latest()
             ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Response
+        |--------------------------------------------------------------------------
+        */
+
+        return response()->json([
+            'data' => $notifications
+        ]);
     }
 
     /**
-     * 🧪 TEST endpoint (مهم جدًا للاختبار)
+     * Test notification system (debug endpoint).
+     *
+     * @return JsonResponse
      */
-    public function testNotification()
+    public function testNotification(): JsonResponse
     {
-        app(\App\Services\NotificationService::class)->send(
+        /*
+        |--------------------------------------------------------------------------
+        | Send Test Notification
+        |--------------------------------------------------------------------------
+        */
+
+        app(NotificationService::class)->send(
             Auth::user(),
             "Test 🔥",
             "Notification system is working",
@@ -60,8 +133,36 @@ class OrderController extends Controller
             ["time" => now()]
         );
 
+        /*
+        |--------------------------------------------------------------------------
+        | Response
+        |--------------------------------------------------------------------------
+        */
+
         return response()->json([
             'message' => 'Test notification sent'
         ]);
     }
-} 
+    /**
+     * Cancel order (owner only).
+     *
+     * Cancels an order if it belongs to the authenticated user.
+     *
+     * @param int $orderId
+     * @return JsonResponse
+     *
+     * POST /api/orders/{orderId}/cancel
+     */
+    public function cancel(int $orderId): JsonResponse
+    {
+        $order = $this->orderService->cancelOrder(
+            $orderId,
+            Auth::id()
+        );
+
+        return response()->json([
+            'message' => 'Order cancelled successfully',
+            'data' => $order
+        ]);
+    }
+}

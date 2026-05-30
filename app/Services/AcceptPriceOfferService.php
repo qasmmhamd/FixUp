@@ -11,21 +11,57 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Auth\Access\AuthorizationException;
 use Exception;
 
+/**
+ * @class AcceptPriceOfferService
+ *
+ * Handles the business logic of accepting a price offer in the system.
+ *
+ * This service is responsible for:
+ * - Validating ownership and authorization
+ * - Ensuring data consistency using DB transactions
+ * - Deducting platform/job fees from worker wallet
+ * - Updating order and offer statuses
+ * - Rejecting all competing offers
+ *
+ * It acts as a core domain service in the order lifecycle.
+ */
 class AcceptPriceOfferService
 {
+    /**
+     * Wallet service dependency
+     *
+     * @var WalletService
+     */
     public function __construct(
         protected WalletService $walletService
     ) {}
 
-    public function execute(
-        int $orderId,
-        int $offerId
-    ): Order {
+    /**
+     * Accept a specific price offer for an order.
+     *
+     * This method ensures full transactional integrity:
+     * - Locks order and offer records
+     * - Validates authorization and ownership
+     * - Deducts job fee from worker wallet
+     * - Updates order and offer status
+     * - Rejects other competing offers
+     *
+     * @param int $orderId
+     * @param int $offerId
+     * @return Order
+     *
+     * @throws AuthorizationException
+     * @throws Exception
+     */
+    public function execute(int $orderId, int $offerId): Order
+    {
+        return DB::transaction(function () use ($orderId, $offerId) {
 
-        return DB::transaction(function () use (
-            $orderId,
-            $offerId
-        ) {
+            /*
+            |----------------------------------------------------------
+            | Fetch Offer & Order with Row Locking
+            |----------------------------------------------------------
+            */
 
             $offer = PriceOffer::with('order')
                 ->lockForUpdate()
@@ -34,6 +70,12 @@ class AcceptPriceOfferService
             $order = Order::lockForUpdate()
                 ->findOrFail($orderId);
 
+            /*
+            |----------------------------------------------------------
+            | Authorization Check (Customer Ownership)
+            |----------------------------------------------------------
+            */
+
             if ($order->user_id !== Auth::id()) {
                 throw new AuthorizationException(
                     'You are not allowed to accept this offer'
@@ -41,9 +83,9 @@ class AcceptPriceOfferService
             }
 
             /*
-            |--------------------------------------------------------------------------
-            | Validation
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------
+            | Business Validation Rules
+            |----------------------------------------------------------
             */
 
             if ($offer->order_id !== $order->id) {
@@ -59,17 +101,20 @@ class AcceptPriceOfferService
             }
 
             /*
-            |--------------------------------------------------------------------------
-            | Deduct platform fee
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------
+            | Resolve Worker Account
+            |----------------------------------------------------------
             */
 
-           $worker =Worker::findOrFail($offer->worker_id);
+            $worker = Worker::findOrFail($offer->worker_id);
             $userId = $worker->user_id;
 
             /*
-            | Deduct fee
+            |----------------------------------------------------------
+            | Deduct Job Fee From Worker Wallet
+            |----------------------------------------------------------
             */
+
             $this->walletService->deductJobFee(
                 $userId,
                 $order->id,
@@ -78,9 +123,9 @@ class AcceptPriceOfferService
             );
 
             /*
-            |--------------------------------------------------------------------------
-            | Check worker availability after deduction
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------
+            | Validate Worker Financial Availability
+            |----------------------------------------------------------
             */
 
             $this->walletService->checkWorkerAvailability(
@@ -88,9 +133,9 @@ class AcceptPriceOfferService
             );
 
             /*
-            |--------------------------------------------------------------------------
-            | Accept offer
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------
+            | Accept Selected Offer
+            |----------------------------------------------------------
             */
 
             $offer->update([
@@ -98,9 +143,9 @@ class AcceptPriceOfferService
             ]);
 
             /*
-            |--------------------------------------------------------------------------
-            | Update order
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------
+            | Update Order State
+            |----------------------------------------------------------
             */
 
             $order->update([
@@ -108,9 +153,9 @@ class AcceptPriceOfferService
             ]);
 
             /*
-            |--------------------------------------------------------------------------
-            | Reject other offers
-            |--------------------------------------------------------------------------
+            |----------------------------------------------------------
+            | Reject Competing Offers
+            |----------------------------------------------------------
             */
 
             PriceOffer::where('order_id', $order->id)
@@ -119,18 +164,24 @@ class AcceptPriceOfferService
                     'status' => 'rejected'
                 ]);
 
+            /*
+            |----------------------------------------------------------
+            | Return Fresh State
+            |----------------------------------------------------------
+            */
+
             return $order->fresh();
         });
     }
 
+    /**
+     * Calculate platform/job fee based on order career.
+     *
+     * @param Order $order
+     * @return int
+     */
     protected function calculateFee(Order $order): int
     {
-        /*
-        |--------------------------------------------------------------------------
-        | حسب المهنة
-        |--------------------------------------------------------------------------
-        */
-
         return $order->career->job_fee;
     }
 }

@@ -3,42 +3,82 @@
 namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\UpdateWorkerProfileRequest;
 use App\Http\Resources\WorkerResource;
 use App\Models\Worker;
-use App\Http\Requests\UpdateWorkerProfileRequest;
 use App\Services\WorkerService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 /**
- * @class WorkerController
- * 
- * Handles worker profile management operations.
- * This controller provides endpoints for workers to manage their profiles,
- * view their information, and handle worker-specific functionality.
+ * Class WorkerController
+ *
+ * Handles worker profile operations including:
+ * - Listing workers
+ * - Updating authenticated worker profile
  */
 class WorkerController extends Controller
 {
-   
+    /**
+     * Worker service instance.
+     *
+     * @var WorkerService
+     */
     public function __construct(
         private WorkerService $workerService
     ) {}
-     
-    public function index()
-{
-    $workers = Worker::with(['user', 'career', 'images'])->get();
 
-    return WorkerResource::collection($workers);
-}
     /**
-     * تحديث بيانات العامل
+     * Get all workers with related data.
+     *
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function index()
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | Fetch Workers
+        |--------------------------------------------------------------------------
+        */
+
+        $workers = Worker::with([
+                'user',
+                'career',
+                'images'
+            ])
+            ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Response (Resource Collection)
+        |--------------------------------------------------------------------------
+        */
+
+        return WorkerResource::collection($workers);
+    }
+
+    /**
+     * Update authenticated worker profile.
+     *
+     * @param UpdateWorkerProfileRequest $request
+     * @return JsonResponse
      */
     public function update(UpdateWorkerProfileRequest $request): JsonResponse
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Get Authenticated User
+        |--------------------------------------------------------------------------
+        */
+
         $user = Auth::user();
 
-        // تأكد أن المستخدم عنده Worker
+        /*
+        |--------------------------------------------------------------------------
+        | Resolve Worker Profile
+        |--------------------------------------------------------------------------
+        */
+
         $worker = $user->worker;
 
         if (! $worker) {
@@ -47,13 +87,23 @@ class WorkerController extends Controller
             ], 404);
         }
 
-        // البيانات
+        /*
+        |--------------------------------------------------------------------------
+        | Prepare Data
+        |--------------------------------------------------------------------------
+        */
+
         $data = $request->validated();
 
-        // الملفات (images)
         $files = [
             'images' => $request->file('images')
         ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | Execute Update
+        |--------------------------------------------------------------------------
+        */
 
         $updatedWorker = $this->workerService->update(
             $worker,
@@ -62,10 +112,15 @@ class WorkerController extends Controller
             $user
         );
 
+        /*
+        |--------------------------------------------------------------------------
+        | Response
+        |--------------------------------------------------------------------------
+        */
+
         return response()->json([
             'message' => 'Worker updated successfully',
-            'data' => $updatedWorker
+            'data'    => $updatedWorker
         ]);
     }
 }
-

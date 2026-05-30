@@ -1,47 +1,89 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\Address;
-use App\Models\Order;
 use App\Models\Image;
+use App\Models\Order;
 use App\Models\Worker;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Class OrderService
+ *
+ * Core business logic for order lifecycle in the FixUp platform.
+ *
+ * Responsibilities:
+ * - Creating customer orders
+ * - Managing addresses (new or existing)
+ * - Attaching services and images
+ * - Notifying matching workers
+ * - Finding eligible worker orders based on service compatibility
+ *
+ * This service is the central hub of the order system and is responsible
+ * for both persistence and domain-level orchestration.
+ */
 class OrderService
 {
     public function __construct(
         private NotificationService $notificationService
     ) {}
 
-    public function create(array $data, int $user_id): Order
-    {
+    /**
+     * Create a new order for a customer.
+     *
+     * Flow:
+     * 1. Resolve or create address
+     * 2. Create order record
+     * 3. Attach services
+     * 4. Store images
+     * 5. Notify workers after commit
+     *
+     * @param array $data
+     * @param int $user_id
+     * @return Order
+     */
+    public function create(
+        array $data,
+        int $user_id
+    ): Order {
+
         $order = DB::transaction(function () use ($data, $user_id) {
 
-            // 🔹 Address
+            /**
+             * Resolve address (new or existing)
+             */
             $addressId = $this->handleAddress($data, $user_id);
 
-            // 🔹 Create Order
+            /**
+             * Create order record
+             */
             $order = Order::create([
-                'user_id' => $user_id,
-                'description' => $data['description'],
-                'address_id' => $addressId,
+                'user_id'      => $user_id,
+                'description'  => $data['description'],
+                'address_id'   => $addressId,
                 'scheduled_at' => $data['scheduled_at'] ?? null,
-                'career_id' => $data['career_id'],
-                'priority' => $data['priority'] ?? false,
-                'expires_at' => now()->addHours(12),
+                'career_id'    => $data['career_id'],
+                'priority'     => $data['priority'] ?? false,
+                'expires_at'   => now()->addHours(12),
             ]);
 
-            // 🔹 Attach services
+            /**
+             * Attach selected services
+             */
             $order->services()->attach($data['services']);
 
-            // 🔹 Save images
+            /**
+             * Persist uploaded images
+             */
             if (!empty($data['images'])) {
                 foreach ($data['images'] as $image) {
+
                     $path = $image->store('orders', 'public');
 
                     Image::create([
                         'order_id' => $order->id,
-                        'path' => $path,
+                        'path'     => $path,
                     ]);
                 }
             }
@@ -49,7 +91,9 @@ class OrderService
             return $order;
         });
 
-        // 🔥 مهم جدًا: بعد نجاح العملية فقط
+        /**
+         * Post-transaction notification (ensures DB consistency)
+         */
         DB::afterCommit(function () use ($order) {
             $this->notifyWorkers($order);
         });
@@ -65,17 +109,28 @@ class OrderService
     }
 
     /**
-     * 🔹 Handle address
+     * Resolve order address.
+     *
+     * - Creates new address if full address payload exists
+     * - Otherwise uses existing address_id
+     *
+     * @param array $data
+     * @param int $user_id
+     * @return int address_id
      */
-    private function handleAddress(array $data, int $user_id): int
-    {
+    private function handleAddress(
+        array $data,
+        int $user_id
+    ): int {
+
         if (!empty($data['address'])) {
+
             $address = Address::create([
-                'user_id' => $user_id,
-                'latitude' => $data['address']['latitude'],
-                'longitude' => $data['address']['longitude'],
+                'user_id'          => $user_id,
+                'latitude'         => $data['address']['latitude'],
+                'longitude'        => $data['address']['longitude'],
                 'detailed_address' => $data['address']['detailed_address'],
-                'area_address_id' => $data['address']['area_address_id'] ?? null,
+                'area_address_id'  => $data['address']['area_address_id'] ?? null,
             ]);
 
             return $address->id;
@@ -85,9 +140,16 @@ class OrderService
     }
 
     /**
-     * 🔥 Notify workers (FIXED)
+     * Notify all eligible workers about a new order.
+     *
+     * Criteria:
+     * - Same career
+     * - Worker is active
+     *
+     * @param Order $order
+     * @return void
      */
-    private function notifyWorkers(Order $order)
+    private function notifyWorkers(Order $order): void
     {
         $workers = Worker::with('user')
             ->where('career_id', $order->career_id)
@@ -102,7 +164,6 @@ class OrderService
                 continue;
             }
 
-            // 🔥 بدون شرط fcm_token
             $this->notificationService->send(
                 $user,
                 "طلب جديد 🛠️",
@@ -115,8 +176,21 @@ class OrderService
         }
     }
 
-    public function getMatchingOrdersForWorker(int $userId)
-    {
+    /**
+     * Get orders that match a worker's services and career.
+     *
+     * Matching logic:
+     * - Same career
+     * - Pending status
+     * - All required services must be satisfied
+     *
+     * @param int $userId
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getMatchingOrdersForWorker(
+        int $userId
+    ) {
+
         $worker = Worker::with('services')
             ->where('user_id', $userId)
             ->firstOrFail();
@@ -137,4 +211,71 @@ class OrderService
             ->having('services_count', '=', DB::raw('matched_services_count'))
             ->get();
     }
+    /**
+ * Cancel an order if it belongs to the authenticated user.
+ *
+ * Business Logic:
+ * - Verifies that the order belongs to the user.
+ * - Prevents cancellation if order is already accepted or completed.
+ * - Updates order status to "cancelled".
+ *
+ * @param int $orderId The ID of the order.
+ * @param int $userId The ID of the authenticated user.
+ * @return Order Returns the updated order model.
+ *
+ * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+ * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+ *
+ * @example Internal Usage:
+ * $this->orderService->cancelOrder($orderId, $userId);
+ */
+    public function cancelOrder(int $orderId, int $userId): Order
+    {
+        $order = Order::where('id', $orderId)
+            ->where('user_id', $userId)
+            ->first();
+
+        abort_unless($order, 404, 'The order does not exist');
+
+        abort_if(
+            $order->status !== 'pending',
+            403,
+            'The order cannot be cancelled at its current status'
+        );
+
+        $order->update([
+            'status' => 'cancelled'
+        ]);
+
+        return $order->fresh();
+    }
+    /**
+     * Get user orders with optional status filter.
+     *
+     * @param int $userId
+     * @param string|null $status
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getUserOrders(
+            int $userId,
+            ?string $status = null
+        )
+        {
+            return Order::query()
+                ->where('user_id', $userId)
+
+                ->when($status, function ($query) use ($status) {
+                    $query->where('status', $status);
+                })
+
+                ->with([
+                    'services',
+                    'address',
+                    'offers',
+                    'images'
+                ])
+
+                ->latest()
+                ->get();
+        }
 }

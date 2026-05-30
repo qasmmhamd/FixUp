@@ -1,15 +1,28 @@
 <?php
 
 namespace App\Http\Controllers\Notification;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\Notification;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @class NotificationController
+ *
+ * Handles user notifications retrieval and management.
+ * Provides endpoints for listing notifications, filtering unread ones,
+ * and marking notifications as read.
+ *
+ * This controller operates on in-app notifications stored in the database
+ * and assumes each notification is linked to an authenticated user.
+ */
 class NotificationController extends Controller
 {
-    // 📥 كل الإشعارات
+    /**
+     * Get all notifications for the authenticated user.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function index()
     {
         return Auth::user()
@@ -18,28 +31,42 @@ class NotificationController extends Controller
             ->get();
     }
 
-    // 🔔 غير المقروءة فقط
+    /**
+     * Get unread notifications for the authenticated user.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function unread()
     {
         return Auth::user()
             ->notifications()
-            ->unread()
+            ->whereNull('read_at')
             ->latest()
             ->get();
     }
 
-    // ✔ تحديد إشعار كمقروء
-    public function markAsRead($id)
+    /**
+     * Mark a specific notification as read.
+     *
+     * @param int $id Notification ID
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function markAsRead(int $id)
     {
         $notification = Notification::findOrFail($id);
 
-        // حماية (لا يقرأ إشعار غيره)
+        // Security check: ensure user owns the notification
         if ($notification->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return response()->json([
+                'error' => 'Unauthorized'
+            ], 403);
         }
 
         $notification->markAsRead();
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification marked as read'
+        ]);
     }
 }

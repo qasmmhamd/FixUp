@@ -3,76 +3,160 @@
 namespace App\Http\Controllers\Notification;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Services\FirebaseService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+
+/**
+ * Class NotificationPriceOfferController
+ *
+ * Handles notification operations related to price offers and Firebase testing.
+ * Includes:
+ * - Fetching user notifications
+ * - Fetching unread notifications
+ * - Testing FCM token generation
+ * - Sending test push notifications
+ */
 class NotificationPriceOfferController extends Controller
 {
-     public function index()
-    {      
+    /**
+     * Get all notifications for authenticated user.
+     *
+     * @return mixed
+     */
+    public function index()
+    {
         return Auth::user()->notifications;
     }
 
+    /**
+     * Get unread notifications for authenticated user.
+     *
+     * @return mixed
+     */
     public function unread()
     {
         return Auth::user()->unreadNotifications;
-        
     }
+
+    /**
+     * Send test notification via Firebase Cloud Messaging (FCM).
+     *
+     * @return mixed
+     */
     public function send()
-{
-    $firebase = new FirebaseService();
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | Generate Firebase Access Token
+        |--------------------------------------------------------------------------
+        */
 
-    $token = $firebase->getAccessToken();
+        $firebase = new FirebaseService();
+        $token = $firebase->getAccessToken();
 
-    $fcmToken = "USER_DEVICE_TOKEN";
+        /*
+        |--------------------------------------------------------------------------
+        | Target Device Token (TEST ONLY)
+        |--------------------------------------------------------------------------
+        */
 
-    $response = Http::withToken($token)->post(
-        'https://fcm.googleapis.com/v1/projects/fixup-c687c/messages:send',
-        [
-            "message" => [
-                "token" => $fcmToken,
-                "notification" => [
-                    "title" => "عرض سعر جديد",
-                    "body" => "تم إرسال عرض سعر لك"
-                ],
-                "data" => [
-                    "type" => "price_offer",
-                    "id" => "123"
+        $fcmToken = "USER_DEVICE_TOKEN";
+
+        /*
+        |--------------------------------------------------------------------------
+        | Send Request to FCM API
+        |--------------------------------------------------------------------------
+        */
+
+        $response = Http::withToken($token)->post(
+            'https://fcm.googleapis.com/v1/projects/fixup-c687c/messages:send',
+            [
+                "message" => [
+                    "token" => $fcmToken,
+                    "notification" => [
+                        "title" => "عرض سعر جديد",
+                        "body"  => "تم إرسال عرض سعر لك"
+                    ],
+                    "data" => [
+                        "type" => "price_offer",
+                        "id"   => "123"
+                    ]
                 ]
             ]
-        ]
-    );
+        );
 
-    return $response->json();
-}
-public function testToken()
+        /*
+        |--------------------------------------------------------------------------
+        | Response
+        |--------------------------------------------------------------------------
+        */
+
+        return $response->json();
+    }
+
+    /**
+     * Get Firebase access token (debug).
+     *
+     * @return mixed
+     */
+    public function testToken()
     {
         $firebase = new FirebaseService();
         return $firebase->getAccessToken();
     }
 
-public function sendNotification()
-{
-    $accessToken = (new FirebaseService())->getAccessToken();
+    /**
+     * Send advanced test notification with fixed token.
+     *
+     * @return mixed
+     */
+    public function sendNotification()
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | Get Access Token
+        |--------------------------------------------------------------------------
+        */
 
-    $fcmToken = "cFYMKMB0AWHeVxDyieDDlF:APA91bG3ZTSZrfofw_iIXcaegnzQWiCK00tshMfSeNfJ6XXp8GubVJR9c-Ph8ui4ZxLQrnU-fUdI__BWgY4TrIpqsH_9W0cJ6DQd3Bbkj6U1wTz5vlvEHIM";
+        $accessToken = (new FirebaseService())->getAccessToken();
 
-    $response = Http::withToken($accessToken)
-        ->post("https://fcm.googleapis.com/v1/projects/fixup-c687c/messages:send", [
-            "message" => [
-                "token" => $fcmToken,
-                "notification" => [
-                    "title" => "🚀 Test Notification",
-                    "body" => "This is a test from Laravel"
-                ],
-                "data" => [
-                    "type" => "test",
-                    "id" => "123"
+        /*
+        |--------------------------------------------------------------------------
+        | Target FCM Token (TEST ONLY)
+        |--------------------------------------------------------------------------
+        */
+
+        $fcmToken = "cFYMKMB0AWHeVxDyieDDlF:APA91bG3ZTSz...";
+
+        /*
+        |--------------------------------------------------------------------------
+        | Send Notification
+        |--------------------------------------------------------------------------
+        */
+
+        $response = Http::withToken($accessToken)
+            ->post("https://fcm.googleapis.com/v1/projects/fixup-c687c/messages:send", [
+                "message" => [
+                    "token" => $fcmToken,
+                    "notification" => [
+                        "title" => "🚀 Test Notification",
+                        "body"  => "This is a test from Laravel"
+                    ],
+                    "data" => [
+                        "type" => "test",
+                        "id"   => "123"
+                    ]
                 ]
-            ]
-        ]);
+            ]);
 
-    return $response->json();
-}
+        /*
+        |--------------------------------------------------------------------------
+        | Response
+        |--------------------------------------------------------------------------
+        */
+
+        return $response->json();
+    }
 }
