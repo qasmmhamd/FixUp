@@ -39,6 +39,7 @@ use App\Http\Controllers\Wallet\AdminWalletController;
 use App\Http\Controllers\Wallet\WorkerWalletController;
 use App\Http\Controllers\Wallet\JobFeeController;
 
+use App\Http\Controllers\DashboardAdmin\StatisticsController;
 use App\Http\Controllers\DashboardAdmin\ManagingAreasController;
 use App\Http\Controllers\DashboardAdmin\ManagingCareersController;
 use App\Http\Controllers\DashboardAdmin\ManagingWorkersController;
@@ -210,6 +211,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
             Route::post('/wallet/job-fees', [JobFeeController::class, 'store']);
             Route::put('/wallet/job-fees/{id}', [JobFeeController::class, 'update']);
+
+            /*
+            |--------------------------------------------------------------------------
+            | STATISTICS & DASHBOARD
+            |--------------------------------------------------------------------------
+            */
+
+            Route::get('/statistics', [StatisticsController::class, 'index']);
 
             /*
             |--------------------------------------------------------------------------

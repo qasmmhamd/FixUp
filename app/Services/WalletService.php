@@ -272,67 +272,33 @@ class WalletService
      * @return void
      * @throws Exception
      */
-    public function checkWorkerAvailability(
-        int $workerId
-    ): void {
+  public function checkWorkerAvailability(int $workerId): void
+{
+    $worker = Worker::with(['career.jobFeeRule'])->findOrFail($workerId);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Get Worker
-        |--------------------------------------------------------------------------
-        */
+    $wallet = Wallet::where('user_id', $worker->user_id)->first();
 
-        $worker = Worker::findOrFail($workerId);
+    if (!$wallet) {
+        throw new Exception('Wallet not found');
+    }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Resolve User ID
-        |--------------------------------------------------------------------------
-        */
+    $minimumRequired = $worker->career?->jobFeeRule?->fee;
 
-        $userId = $worker->user_id;
+    if (is_null($minimumRequired)) {
+        throw new Exception('Job fee rule not found for this career');
+    }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Load Wallet
-        |--------------------------------------------------------------------------
-        */
-
-        $wallet = Wallet::where(
-            'user_id',
-            $userId
-        )->first();
-
-        if (!$wallet) {
-
-            throw new Exception('Wallet not found');
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Minimum Balance Rule
-        |--------------------------------------------------------------------------
-        */
-
-        $minimumRequired = 10;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Update Wallet Status
-        |--------------------------------------------------------------------------
-        */
-
-        if ($wallet->balance < $minimumRequired) {
-
-            $wallet->update([
-                'status' => 'suspended'
-            ]);
-
-            return;
-        }
+    if ($wallet->balance < $minimumRequired) {
 
         $wallet->update([
-            'status' => 'active'
+            'status' => 'suspended'
         ]);
+
+        return;
     }
+
+    $wallet->update([
+        'status' => 'active'
+    ]);
+}
 }

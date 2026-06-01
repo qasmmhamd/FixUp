@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Worker;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Wallet;
 
 /**
  * --------------------------------------------------------------------------
@@ -44,6 +45,15 @@ class WorkerService
             $files,
             $user
         ) {
+             /*
+            |--------------------------------------------------------------------------
+            | Prevent Duplicate Worker Creation
+            |--------------------------------------------------------------------------
+            */
+
+            if (Worker::where('user_id', $user->id)->exists()) {
+                throw new \Exception('Worker profile already exists for this user');
+            }
 
             /*
             |--------------------------------------------------------------------------
@@ -57,7 +67,24 @@ class WorkerService
                 'career_id'        => $data['career_id'],
                 'about'            => $data['about'] ?? null,
                 'years_experience' => $data['years_experience'] ?? null,
+
+                
             ]);
+            /*
+            |--------------------------------------------------------------------------
+            | Create Wallet For Worker
+            |--------------------------------------------------------------------------
+            */
+
+            Wallet::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'balance'       => 0,
+                    'status'        => 'suspended',
+                    'total_charged' => 0,
+                    'total_spent'   => 0,
+                ]
+            );
 
             /*
             |--------------------------------------------------------------------------
