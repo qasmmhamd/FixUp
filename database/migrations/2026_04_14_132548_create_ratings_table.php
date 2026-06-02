@@ -24,7 +24,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('worker_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('order_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('order_id')->constrained()->cascadeOnDelete()->unique();
             $table->integer('rate');
             $table->timestamps();
         });

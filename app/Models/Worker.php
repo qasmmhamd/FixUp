@@ -91,5 +91,13 @@ class Worker extends Model
     {
         return $query->where('status', $status);
     }
+    /*
+    * Get all ratings received by this worker.
+    * @return HasMany
+    */
+        public function ratings(): HasMany
+    {
+        return $this->hasMany(Rating::class);
+    }
     
 }

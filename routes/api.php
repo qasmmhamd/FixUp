@@ -23,10 +23,11 @@ use App\Http\Controllers\Auth\AccountUpgradeController;
 use App\Http\Controllers\Profile\UserController;
 use App\Http\Controllers\Profile\WorkerController;
 
+
 use App\Http\Controllers\Order\OrderController;
+use App\Http\Controllers\Order\RatingController;
 use App\Http\Controllers\Order\WorkerOrderController;
 use App\Http\Controllers\Order\PriceOfferController;
-use App\Http\Controllers\Wallet\AcceptPriceOfferController;
 
 use App\Http\Controllers\Notification\DeviceController;
 use App\Http\Controllers\Notification\NotificationPriceOfferController;
@@ -35,6 +36,7 @@ use App\Http\Controllers\Chat\GuidedConversationController;
 use App\Http\Controllers\Chat\AiChatController;
 use App\Http\Controllers\Chat\MessageTemplateController;
 
+use App\Http\Controllers\Wallet\AcceptPriceOfferController;
 use App\Http\Controllers\Wallet\AdminWalletController;
 use App\Http\Controllers\Wallet\WorkerWalletController;
 use App\Http\Controllers\Wallet\JobFeeController;
@@ -87,6 +89,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/orders/{orderId}/price-offers', [PriceOfferController::class, 'index']);
     
+    Route::post('/orders/Rate',[RatingController::class, 'store']);
 
     /*
     |--------------------------------------------------------------------------
@@ -133,6 +136,14 @@ Route::middleware('auth:sanctum')->group(function () {
     */
 
     Route::post('/register-worker', [RegisteredWorkersController::class, 'store']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | RATE WORKER
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/workers/{worker}/rating',[WorkerController::class, 'show']);
 
     /*
     |--------------------------------------------------------------------------

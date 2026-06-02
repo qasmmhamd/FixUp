@@ -6,7 +6,11 @@ use App\Models\Address;
 use App\Models\Image;
 use App\Models\Order;
 use App\Models\Worker;
+use App\Models\Rating;
+use App\Models\PriceOffer;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+
 
 /**
  * Class OrderService
@@ -277,5 +281,56 @@ class OrderService
 
                 ->latest()
                 ->get();
+        }
+        /**
+         * Create a rating for a completed order.
+         *
+         * Ensures the order belongs to the user, is completed,
+         * and has not been rated before.
+         *
+         * @param int $userId
+         * @param array $data
+         * @return Rating
+         *
+         * @throws ValidationException
+         */
+                
+        public function createRating(int $userId, array $data): Rating
+        {
+            $order = Order::where('id', $data['order_id'])
+                ->where('user_id', $userId)
+                ->firstOrFail();
+
+            // التحقق من اكتمال الطلب
+            if ($order->status !== 'completed') {
+                throw ValidationException::withMessages([
+                    'order_id' => 'You can only rate completed orders.',
+                ]);
+            }
+
+            // منع التقييم المكرر
+            if (Rating::where('order_id', $order->id)->exists()) {
+                throw ValidationException::withMessages([
+                    'order_id' => 'This order has already been rated.',
+                ]);
+            }
+
+            // جلب العرض المقبول الخاص بالطلب
+            $acceptedOffer = PriceOffer::where('order_id', $order->id)
+                ->where('status', 'accepted')
+                ->first();
+
+            if (!$acceptedOffer) {
+                throw ValidationException::withMessages([
+                    'order_id' => 'No accepted offer found for this order.',
+                ]);
+            }
+
+            return Rating::create([
+                'user_id'   => $userId,
+                'worker_id' => $acceptedOffer->worker_id,
+                'order_id'  => $order->id,
+                'rate'      => $data['rate'],
+            ]);
         }
 }

@@ -297,4 +297,22 @@ class WorkerService
             $img->delete();
         }
     }
+    /**
+     * Get a worker's average rating and total ratings.
+     *
+     * @param int $workerId
+     * @return array
+     */
+
+    public function getWorkerRating(int $workerId): array
+        {
+            $worker = Worker::withAvg('ratings', 'rate')
+                ->withCount('ratings')
+                ->findOrFail($workerId);
+
+            return [
+                'average_rating' => round($worker->ratings_avg_rate ?? 0, 1),
+                'ratings_count' => $worker->ratings_count,
+            ];
+        }
 }

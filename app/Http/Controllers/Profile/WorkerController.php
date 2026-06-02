@@ -8,6 +8,7 @@ use App\Http\Resources\WorkerResource;
 use App\Models\Worker;
 use App\Services\WorkerService;
 use Illuminate\Http\JsonResponse;
+use App\Http\Resources\RatingStatsResource;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -122,5 +123,14 @@ class WorkerController extends Controller
             'message' => 'Worker updated successfully',
             'data'    => $updatedWorker
         ]);
+    }
+    /**
+     * Display the worker's rating statistics.
+     */
+    public function show(int $workerId): RatingStatsResource
+    {
+        $ratingStats = $this->workerService->getWorkerRating($workerId);
+
+        return new RatingStatsResource($ratingStats);
     }
 }
