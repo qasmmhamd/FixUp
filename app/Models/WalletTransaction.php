@@ -10,6 +10,7 @@ class WalletTransaction extends Model
         'wallet_id',
         'type',
         'amount',
+        'order_id',
         'balance_before',
         'balance_after',
         'reference_type',
@@ -18,8 +19,14 @@ class WalletTransaction extends Model
         'performed_by',
         'note'
     ];
+  
       public function wallet(): BelongsTo
     {
         return $this->belongsTo(Wallet::class);
+    }
+    
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 }

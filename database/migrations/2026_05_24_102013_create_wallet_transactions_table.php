@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('wallet_transactions', function (Blueprint $table) {
     $table->id();
 
+     $table->foreignId('order_id')->nullable()->constrained()->nullOnDelete();
+
     $table->foreignId('wallet_id')->constrained()->cascadeOnDelete();
 
     $table->string('type'); 
-    // topup | job_fee | refund | penalty | bonus | adjustment
 
     $table->bigInteger('amount');
 

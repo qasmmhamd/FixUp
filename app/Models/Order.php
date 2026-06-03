@@ -71,5 +71,9 @@ public function scopeActive($query)
 {
     return $query->where('expires_at', '>', now());
 }
+public function walletTransactions()
+{
+    return $this->hasMany(WalletTransaction::class);
+}
 
 }

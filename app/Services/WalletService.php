@@ -48,7 +48,7 @@ class WalletService
     ) {
 
         return DB::transaction(function () use (
-            $workerId,
+             $workerId,
             $amount,
             $adminId,
             $note
@@ -108,6 +108,7 @@ class WalletService
 
             return WalletTransaction::create([
                 'wallet_id'       => $wallet->id,
+                'order_id'        => null,
                 'type'            => 'topup',
                 'amount'          => $amount,
                 'balance_before'  => $before,
@@ -136,14 +137,14 @@ class WalletService
      */
     public function deductJobFee(
         int $workerId,
-        int $jobId,
+        int $orderId,
         int $careerId,
         string $idempotencyKey
     ) {
 
         return DB::transaction(function () use (
             $workerId,
-            $jobId,
+            $orderId,
             $careerId,
             $idempotencyKey
         ) {
@@ -249,15 +250,16 @@ class WalletService
 
             return WalletTransaction::create([
                 'wallet_id'       => $wallet->id,
+                'order_id'        => $orderId,
                 'type'            => 'job_fee',
                 'amount'          => $amount,
                 'balance_before'  => $before,
                 'balance_after'   => $wallet->balance,
-                'reference_type'  => 'job',
-                'reference_id'    => $jobId,
+                'reference_type'  => 'order',
+                'reference_id'    => $orderId,
                 'idempotency_key' => $idempotencyKey,
-                'note'            => "Fee for career #{$careerId}",
-            ]);
+                'note'            => "Fee for order #{$orderId}",
+                        ]);
         });
     }
 

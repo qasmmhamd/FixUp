@@ -23,6 +23,7 @@ return new class extends Migration
                 'rejected',
                 'expired',
                 'cancelled',
+                'completion_requested',
                 'completed'
             ])->default('pending');
             $table->timestamp('expires_at');

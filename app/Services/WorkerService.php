@@ -311,7 +311,7 @@ class WorkerService
                 ->findOrFail($workerId);
 
             return [
-                'average_rating' => round($worker->ratings_avg_rate ?? 0, 1),
+                'average_rating' => $worker->ratings_avg_rate ?? 0,
                 'ratings_count' => $worker->ratings_count,
             ];
         }

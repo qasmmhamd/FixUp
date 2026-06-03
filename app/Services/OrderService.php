@@ -301,21 +301,18 @@ class OrderService
                 ->where('user_id', $userId)
                 ->firstOrFail();
 
-            // التحقق من اكتمال الطلب
             if ($order->status !== 'completed') {
                 throw ValidationException::withMessages([
                     'order_id' => 'You can only rate completed orders.',
                 ]);
             }
 
-            // منع التقييم المكرر
             if (Rating::where('order_id', $order->id)->exists()) {
                 throw ValidationException::withMessages([
                     'order_id' => 'This order has already been rated.',
                 ]);
             }
 
-            // جلب العرض المقبول الخاص بالطلب
             $acceptedOffer = PriceOffer::where('order_id', $order->id)
                 ->where('status', 'accepted')
                 ->first();
