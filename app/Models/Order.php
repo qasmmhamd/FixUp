@@ -14,13 +14,13 @@ class Order extends Model
         'address_id',
         'career_id',
         'priority',
+        'is_rating',
         'scheduled_at'
             ];
 
     protected $casts = [
         'expires_at' => 'datetime',
         'scheduled_at' => 'datetime',
-        'is_broadcast' => 'boolean',
     ];
 
 

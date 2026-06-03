@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePriceOfferRequest;
 use App\Services\PriceOfferService;
 use App\Services\NotificationService;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -154,8 +155,7 @@ class PriceOfferController extends Controller
     public function notifications(): JsonResponse
     {
         return response()->json([
-            'data' => Auth::user()
-                ->notifications()
+            'data' => Notification::where('user_id', Auth::id())
                 ->where('type', 'price_offer')
                 ->latest()
                 ->get()

@@ -26,6 +26,10 @@ return new class extends Migration
                 'completion_requested',
                 'completed'
             ])->default('pending');
+
+            $table->boolean('is_rating')->nullable()->default(false);
+
+
             $table->timestamp('expires_at');
             
             $table->foreignId('address_id')->nullable()->constrained()->nullOnDelete();

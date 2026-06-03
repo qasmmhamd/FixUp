@@ -25,8 +25,7 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        return Auth::user()
-            ->notifications()
+        return Notification::where('user_id', Auth::id())
             ->latest()
             ->get();
     }
@@ -38,8 +37,7 @@ class NotificationController extends Controller
      */
     public function unread()
     {
-        return Auth::user()
-            ->notifications()
+        return Notification::where('user_id', Auth::id())
             ->whereNull('read_at')
             ->latest()
             ->get();

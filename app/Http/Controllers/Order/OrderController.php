@@ -8,6 +8,7 @@ use App\Services\OrderService;
 use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -96,8 +97,7 @@ class OrderController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $notifications = Auth::user()
-            ->notifications()
+        $notifications = Notification::where('user_id', Auth::id())
             ->latest()
             ->get();
 

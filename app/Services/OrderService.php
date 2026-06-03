@@ -323,11 +323,78 @@ class OrderService
                 ]);
             }
 
-            return Rating::create([
+              $order->update([
+                    'is_rating' => true,
+                ]);
+
+            $rating = Rating::create([
                 'user_id'   => $userId,
                 'worker_id' => $acceptedOffer->worker_id,
                 'order_id'  => $order->id,
                 'rate'      => $data['rate'],
             ]);
+
+            $order->update([
+                'is_rating' => true,
+            ]);
+
+            return $rating;           
+            
+        }
+       
+        public function requestCompletion(int $orderId, int $authUserId): Order
+        {
+            return DB::transaction(function () use ($orderId, $authUserId) {
+
+                $order = Order::lockForUpdate()->findOrFail($orderId);
+
+                if ($order->status !== 'accepted') {
+                    throw new \Exception('Order must be accepted first');
+                }
+
+                $acceptedOffer =PriceOffer::where('order_id', $order->id)
+                    ->where('status', 'accepted')
+                    ->first();
+
+                if (!$acceptedOffer) {
+                    throw new \Exception('No accepted offer found');
+                }
+
+                $worker =Worker::findOrFail($acceptedOffer->worker_id);
+
+                if ($worker->user_id !== $authUserId) {
+                    throw new \Exception('Only assigned worker can request completion');
+                }
+
+                $order->update([
+                    'status' => 'completion_requested'
+                ]);
+
+                return $order->fresh();
+            });
+        }
+        public function markAsCompleted(int $orderId, int $userId): Order
+        {
+            return DB::transaction(function () use ($orderId, $userId) {
+
+                $order = Order::lockForUpdate()->findOrFail($orderId);
+
+                // 1. فقط صاحب الطلب
+                if ($order->user_id !== $userId) {
+                    throw new \Exception('Only order owner can complete the order');
+                }
+
+                // 2. شرط مهم: لازم تكون الحالة "completion_requested"
+                if ($order->status !== 'completion_requested') {
+                    throw new \Exception('Order must be in completion_requested state before marking as completed');
+                }
+
+                // 3. تحديث الحالة
+                $order->update([
+                    'status' => 'completed'
+                ]);
+
+                return $order->fresh();
+            });
         }
 }

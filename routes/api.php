@@ -28,6 +28,7 @@ use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Order\RatingController;
 use App\Http\Controllers\Order\WorkerOrderController;
 use App\Http\Controllers\Order\PriceOfferController;
+use App\Http\Controllers\Order\CompleteOrderController;
 
 use App\Http\Controllers\Notification\DeviceController;
 use App\Http\Controllers\Notification\NotificationPriceOfferController;
@@ -94,6 +95,9 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::post('/orders/Rate',[RatingController::class, 'store']);
 
+    Route::post('/orders/{order}/complete', [CompleteOrderController::class, 'complete']);
+
+
     /*
     |--------------------------------------------------------------------------
     | PRICE OFFERS ACTIONS
@@ -157,6 +161,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:worker')->group(function () {
 
         Route::get('/worker/orders', [WorkerOrderController::class, 'workerOrders']);
+        Route::post('/worker/orders/{order}/request-completion', [CompleteOrderController::class, 'requestCompletion']);
+
 
         Route::get('/worker/offers', [PriceOfferController::class, 'myOffers']);
         Route::get('/worker/offers/accepted', [PriceOfferController::class, 'acceptedOffers']);
