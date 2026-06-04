@@ -10,6 +10,8 @@ use App\Services\WorkerService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\RatingStatsResource;
 use Illuminate\Support\Facades\Auth;
+use Exception;
+use Throwable;
 
 /**
  * Class WorkerController
@@ -132,5 +134,32 @@ class WorkerController extends Controller
         $ratingStats = $this->workerService->getWorkerRating($workerId);
 
         return new RatingStatsResource($ratingStats);
+    }
+ 
+     /**
+      * Get worker job fee for the authenticated worker.
+      *
+      * @return JsonResponse
+      */
+     public function getFee(): JsonResponse
+    {
+      
+    $user = Auth::user();
+
+    $worker = $user->worker;
+
+    if (! $worker) {
+        return response()->json([
+            'message' => 'Worker profile not found'
+        ], 404);
+    }
+
+    $fee = $this->workerService->getWorkerFee($worker->id);
+
+    return response()->json([
+        'message' => 'Worker fee retrieved successfully',
+        'data' => $fee
+    ]);
+    
     }
 }

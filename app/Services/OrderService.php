@@ -341,7 +341,14 @@ class OrderService
             return $rating;           
             
         }
-       
+        /**
+         * Worker requests order completion.
+         *
+         * @param int $orderId
+         * @param int $authUserId
+         * @return \App\Models\Order
+         * @throws \Exception
+         */
         public function requestCompletion(int $orderId, int $authUserId): Order
         {
             return DB::transaction(function () use ($orderId, $authUserId) {
@@ -373,6 +380,14 @@ class OrderService
                 return $order->fresh();
             });
         }
+        /**
+         * Owner marks order as completed.
+         *
+         * @param int $orderId
+         * @param int $userId
+         * @return \App\Models\Order
+         * @throws \Exception
+         */
         public function markAsCompleted(int $orderId, int $userId): Order
         {
             return DB::transaction(function () use ($orderId, $userId) {

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Image;
 use App\Models\User;
 use App\Models\Worker;
+use App\Models\JobFeeRule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Wallet;
@@ -315,4 +316,33 @@ class WorkerService
                 'ratings_count' => $worker->ratings_count,
             ];
         }
+         /**
+     * Retrieve the job fee for a specific worker.
+     *
+     * @param int $workerId
+     * @return array
+     *
+     * @throws Exception If worker does not exist or no fee rule is found.
+     */
+    public function getWorkerFee(int $workerId): array
+    {
+        // Retrieve worker or fail if not found
+        $worker = Worker::findOrFail($workerId);
+
+        // Retrieve active job fee rule based on worker's career
+        $feeRule = JobFeeRule::where('career_id', $worker->career_id)
+            ->where('is_active', true)
+            ->first();
+
+        // Validate existence of fee rule
+        if (!$feeRule) {
+            throw new \Exception('No active job fee rule found for this worker career.');
+        }
+
+        return [
+            'worker_id' => $worker->id,
+            'career_id' => $worker->career_id,
+            'fee'       => $feeRule->fee,
+        ];
+    }
 }

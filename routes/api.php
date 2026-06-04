@@ -44,6 +44,7 @@ use App\Http\Controllers\Wallet\JobFeeController;
 
 
 use App\Http\Controllers\DashboardAdmin\StatisticsController;
+use App\Http\Controllers\DashboardAdmin\JobFeeRuleController;
 use App\Http\Controllers\DashboardAdmin\ManagingAreasController;
 use App\Http\Controllers\DashboardAdmin\ManagingCareersController;
 use App\Http\Controllers\DashboardAdmin\ManagingWorkersController;
@@ -163,6 +164,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/worker/orders', [WorkerOrderController::class, 'workerOrders']);
         Route::post('/worker/orders/{order}/request-completion', [CompleteOrderController::class, 'requestCompletion']);
 
+        Route::get('/workers/fee', [WorkerController::class, 'getFee']);
 
         Route::get('/worker/offers', [PriceOfferController::class, 'myOffers']);
         Route::get('/worker/offers/accepted', [PriceOfferController::class, 'acceptedOffers']);
@@ -195,6 +197,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/message-topics', [MessageTemplateController::class, 'storeTopic']);
             Route::put('/message-topics/{id}', [MessageTemplateController::class, 'updateTopic']);
             Route::delete('/message-topics/{id}', [MessageTemplateController::class, 'destroyTopic']);
+            Route::get('/job-fee-rules', [JobFeeRuleController::class, 'index']);
 
             /*
             |--------------------------------------------------------------------------
