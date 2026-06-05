@@ -38,7 +38,7 @@ class NotificationController extends Controller
     public function unread()
     {
         return Notification::where('user_id', Auth::id())
-            ->whereNull('read_at')
+            ->whereNull('is_read', false)
             ->latest()
             ->get();
     }

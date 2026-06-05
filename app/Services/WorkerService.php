@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Worker;
 use App\Models\JobFeeRule;
 use Illuminate\Support\Facades\DB;
+use App\Services\NotificationService;   
 use Illuminate\Support\Facades\Storage;
 use App\Models\Wallet;
 
@@ -71,6 +72,26 @@ class WorkerService
 
                 
             ]);
+            /*
+            |--------------------------------------------------------------------------
+            | Notify Admin For New Worker Registration
+            |--------------------------------------------------------------------------
+                */
+           $admins = User::where('role', 'admin')->get();
+
+        foreach ($admins as $admin) {
+            app(NotificationService::class)->send(
+                $admin,
+                'طلب عامل جديد',
+                $user->name . ' قام بالتسجيل كعامل وينتظر المراجعة',
+                'new_worker',
+                [
+                    'worker_id' => $worker->id,
+                    'user_id'   => $user->id,
+                    'url'       => '/admin/workers/' . $worker->id,
+                ]
+            );
+}
             /*
             |--------------------------------------------------------------------------
             | Create Wallet For Worker

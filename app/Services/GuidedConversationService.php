@@ -10,6 +10,7 @@ use App\Models\Conversation;
 use App\Models\MessageTemplate;
 use App\Models\MessageTopic;
 use App\Models\PriceOffer;
+use App\Services\NotificationService;
 use App\Models\Worker as WorkerModel;
 
 /**
@@ -113,6 +114,22 @@ class GuidedConversationService
             'sender_id'       => $userId,
             'message'         => $template->text,
         ]);
+                
+             $receiver = $conversation->customer_id == $userId
+            ? $conversation->worker->user
+            : $conversation->customer;
+
+        app(NotificationService::class)->send(
+            $receiver,
+            'رسالة جديدة',
+            $template->text,
+            'chat_message',
+            [
+                'conversation_id' => $conversation->id,
+                'message_id'      => $message->id,
+                'url'             => '/chat/' . $conversation->id,
+            ]
+        );
 
         if ($conversation->status === 'open') {
             $conversation->update(['status' => 'active']);
