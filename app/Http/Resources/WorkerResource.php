@@ -26,13 +26,14 @@ class WorkerResource extends JsonResource
             'id' => $this->id,
 
         'about' => $this->about,
-        'status' => $this->status,
+        'status' => $this->status,      
         'years_experience' => $this->years_experience,
 
         // user + address
         'user' => [
             'id' => $this->user?->id,
             'name' => $this->user?->name,
+            'phone_number' => $this->user?->phone_number,
             'profile_image' => $this->user?->profile_image_url,
 
              'address' => [

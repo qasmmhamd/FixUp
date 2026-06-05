@@ -12,7 +12,7 @@ class WalletSeeder extends Seeder
     {
         foreach (User::all() as $user) {
 
-            $charged = rand(100000, 1000000);
+            $charged = rand(1000, 10000);
 
             $spent = rand(0, $charged);
 
