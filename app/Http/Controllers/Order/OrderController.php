@@ -8,6 +8,7 @@ use App\Services\OrderService;
 use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Resources\OrderResource;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Auth;
 
@@ -76,12 +77,14 @@ class OrderController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        return response()->json([
-            'data' => $this->orderService->getUserOrders(
+         $orders = $this->orderService->getUserOrders(
                 Auth::id(),
                 $request->status
-            )
-        ]);
+            );
+
+            return response()->json([
+                'data' => OrderResource::collection($orders)
+            ]);
     }
 
     /**
@@ -112,37 +115,7 @@ class OrderController extends Controller
         ]);
     }
 
-    /**
-     * Test notification system (debug endpoint).
-     *
-     * @return JsonResponse
-     */
-    public function testNotification(): JsonResponse
-    {
-        /*
-        |--------------------------------------------------------------------------
-        | Send Test Notification
-        |--------------------------------------------------------------------------
-        */
-
-        app(NotificationService::class)->send(
-            Auth::user(),
-            "Test 🔥",
-            "Notification system is working",
-            "test",
-            ["time" => now()]
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Response
-        |--------------------------------------------------------------------------
-        */
-
-        return response()->json([
-            'message' => 'Test notification sent'
-        ]);
-    }
+      
     /**
      * Cancel order (owner only).
      *

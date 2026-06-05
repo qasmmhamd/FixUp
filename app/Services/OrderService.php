@@ -276,7 +276,9 @@ class OrderService
                     'services',
                     'address',
                     'offers',
-                    'images'
+                    'images',
+                    'acceptedOffer.worker.user',
+
                 ])
 
                 ->latest()

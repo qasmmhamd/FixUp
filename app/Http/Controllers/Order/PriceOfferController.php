@@ -125,27 +125,8 @@ class PriceOfferController extends Controller
         ]);
     }
 
-    /**
-     * Test notification system (debug).
-     *
-     * @return JsonResponse
-     */
-    public function test(): JsonResponse
-    {
-        app(NotificationService::class)->send(
-            Auth::user(),
-            "Test Offer 🔥",
-            "Testing price offer notification system",
-            "test",
-            [
-                "time" => now()
-            ]
-        );
-
-        return response()->json([
-            'message' => 'Test notification sent'
-        ]);
-    }
+   
+    
 
     /**
      * Get price offer notifications for authenticated user.
