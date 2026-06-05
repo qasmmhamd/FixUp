@@ -90,7 +90,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/order', [OrderController::class, 'store']);
     Route::post('/orders/{orderId}/cancel', [OrderController::class, 'cancel']);
-    Route::get('/costmer-orders', [OrderController::class, 'index']);
+    Route::get('/customer/orders', [OrderController::class, 'index']);
 
     Route::get('/orders/{orderId}/price-offers', [PriceOfferController::class, 'index']);
     
@@ -135,7 +135,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/ai-chat/messages', [AiChatController::class, 'messages']);
 
     Route::get('/message-templates', [MessageTemplateController::class, 'getTemplates']);
-    Route::get('/Topics', [MessageTemplateController::class, 'topics']);
+    Route::get('/topics', [MessageTemplateController::class, 'topics']);
 
     /*
     |--------------------------------------------------------------------------

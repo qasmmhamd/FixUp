@@ -396,17 +396,14 @@ class OrderService
 
                 $order = Order::lockForUpdate()->findOrFail($orderId);
 
-                // 1. فقط صاحب الطلب
                 if ($order->user_id !== $userId) {
                     throw new \Exception('Only order owner can complete the order');
                 }
 
-                // 2. شرط مهم: لازم تكون الحالة "completion_requested"
                 if ($order->status !== 'completion_requested') {
                     throw new \Exception('Order must be in completion_requested state before marking as completed');
                 }
 
-                // 3. تحديث الحالة
                 $order->update([
                     'status' => 'completed'
                 ]);

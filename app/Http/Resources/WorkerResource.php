@@ -56,7 +56,6 @@ class WorkerResource extends JsonResource
             'name' => $this->career?->name,
         ],
 
-        // ✅ أضف هذا (كان ناقص)
         'services' => $this->services->map(function ($service) {
             return [
                 'id' => $service->id,

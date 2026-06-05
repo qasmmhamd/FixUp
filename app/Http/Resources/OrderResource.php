@@ -21,7 +21,7 @@ class OrderResource extends JsonResource
             'priority' => $this->priority,
             'scheduled_at' => $this->scheduled_at,
             'created_at' => $this->created_at,
-
+            'is_rating' => $this->is_rating,
             'address' => $this->address,
 
             'services' => $this->services,
