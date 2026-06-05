@@ -104,7 +104,7 @@ class AiChatService
         */
 
         $response = Http::withOptions([
-                'verify'  => 'C:\php83\extras\ssl\cacert.pem',
+                'verify'  => env('CURL_CA_BUNDLE'),
                 'timeout' => 60,
             ])
             ->withHeaders([
