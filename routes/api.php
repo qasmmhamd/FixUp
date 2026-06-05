@@ -260,7 +260,7 @@ Route::middleware('auth:sanctum')->group(function () {
 | PUBLIC ROUTES
 |--------------------------------------------------------------------------
 */
-
+Route::get('/statistics/homepage', [StatisticsController::class, 'stsatisticsHomepage']);
 Route::get('/services', [ManagingWorkersServiesController::class, 'index']);
 Route::get('/careers', [ManagingCareersController::class, 'index']);
 Route::get('/areas', [ManagingAreasController::class, 'index']);

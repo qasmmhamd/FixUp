@@ -33,4 +33,16 @@ class StatisticsController extends Controller
             'login_count'       => DB::table('personal_access_tokens')->count(),
         ]);
     }
+    public function stsatisticsHomepage(){
+
+          return response()->json([
+            
+
+            'users_count'       => User::where('role', 'customer')->count(),
+
+            'workers_count'     => User::where('role', 'worker')->count(),
+
+          ]);
+            
+    }
 }

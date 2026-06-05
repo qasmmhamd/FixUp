@@ -9,7 +9,7 @@ use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Resources\OrderResource;
-use Illuminate\Support\Facades\Notification;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 
 /**
