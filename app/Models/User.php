@@ -67,9 +67,6 @@ class User extends Authenticatable
 {
     return $this->hasMany(Notification::class);
 }
-// ========================
-    // 🔥 IMPORTANT: DEVICE TOKENS
-    // ========================
 
     public function devices()
     {
