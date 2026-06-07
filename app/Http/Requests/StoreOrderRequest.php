@@ -38,7 +38,7 @@ class StoreOrderRequest extends FormRequest
         'address' => ['nullable', 'array'],
 
         'images' => ['nullable', 'array'],
-        'images.*' => ['image', 'mimes:jpg,jpeg,png', 'max:2048'],
+        'images.*' => ['image', 'mimes:jpg,jpeg,png,HEIC,heic', 'max:2048'],
 
         'career_id'=> ['required', 'exists:careers,id'],
 
