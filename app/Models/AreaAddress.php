@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 
 /**
  * @class AreaAddress
@@ -12,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * helping customers find workers in their specific regions.
  */
 class AreaAddress extends Model
-{
+{ use HasFactory;
     /**
      * The attributes that are mass assignable.
      *

@@ -7,10 +7,12 @@ use App\Models\Conversation;
 use App\Models\MessageTopic;
 use Illuminate\Database\Seeder;
 
+
 class ConversationSeeder extends Seeder
 {
     public function run(): void
     {
+
         $orders = Order::with('acceptedOffer')->get();
 
         foreach ($orders as $order) {

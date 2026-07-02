@@ -1,58 +1,228 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🔧 FixUp
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+<div align="center">
 
-## About Laravel
+![Laravel](https://img.shields.io/badge/Laravel-12-red?style=for-the-badge&logo=laravel)
+![PHP](https://img.shields.io/badge/PHP-8.4-blue?style=for-the-badge&logo=php)
+![MySQL](https://img.shields.io/badge/MySQL-orange?style=for-the-badge&logo=mysql)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Backend for a Maintenance Services Platform
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+RESTful backend built with Laravel for connecting customers with maintenance workers through orders, offers, chat, notifications, and wallet management.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+</div>
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+# About
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+FixUp is a graduation project developed by a team. This repository contains the **backend implementation**, which I was responsible for.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+The backend exposes REST APIs used by the frontend application and manages authentication, orders, workers, chat, notifications, wallet operations, and the administration dashboard.
 
-## Agentic Development
+---
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+# Features
 
-```bash
-composer require laravel/boost --dev
+## Authentication
 
-php artisan boost:install
+- User Registration
+- Worker Registration
+- Login & Logout
+- Google Login
+- Email Verification
+- Password Reset
+- Sanctum Authentication
+
+---
+
+## Orders
+
+- Create Orders
+- Cancel Orders
+- Complete Orders
+- Order Notifications
+- Customer Orders
+- Worker Orders
+
+---
+
+## Price Offers
+
+- Submit Price Offers
+- Accept Offers
+- View Worker Offers
+- View Accepted Offers
+
+---
+
+## Worker Management
+
+- Worker Registration
+- Worker Profile
+- Worker Rating
+- Worker Filtering
+- Worker Services
+
+---
+
+## Chat
+
+- Guided Conversations
+- AI Chat
+- Message Templates
+- Chat Messages
+- Real-time Messaging (Laravel Reverb)
+- Guided Conversations
+- AI Chat Assistant
+- Message Templates
+
+---
+
+## Wallet
+
+- Worker Wallet
+- Wallet Transactions
+- Job Fee Rules
+- Admin Wallet Top-up
+
+---
+
+## Notifications
+
+- Push Notifications
+- Order Notifications
+- Price Offer Notifications
+
+---
+
+## Admin Dashboard
+
+- Manage Workers
+- Manage Careers
+- Manage Service Areas
+- Manage Services
+- Wallet Management
+- Statistics
+
+---
+
+# Tech Stack
+
+- Laravel 12
+- PHP 8.4
+- MySQL
+- Laravel Sanctum
+- Eloquent ORM
+- PHPUnit
+
+---
+
+# Project Structure
+
+```
+app/
+├── Http/
+├── Models/
+├── Services/
+├── Events/
+├── Notifications/
+
+database/
+├── migrations/
+├── factories/
+├── seeders/
+
+routes/
+tests/
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+# Installation
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+git clone https://github.com/qasmmhamd/FixUp.git
 
-## Code of Conduct
+cd FixUp
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+composer install
 
-## Security Vulnerabilities
+cp .env.example .env
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+php artisan key:generate
 
-## License
+php artisan migrate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+php artisan storage:link
+
+php artisan serve
+```
+
+---
+
+# Testing
+
+Run all tests
+
+```bash
+php artisan test
+```
+
+Run a specific test
+
+```bash
+php artisan test --filter=TestName
+```
+
+---
+
+# Main API Modules
+
+- Authentication
+- Orders
+- Price Offers
+- Workers
+- Profiles
+- Chat
+- Notifications
+- Wallet
+- Admin Dashboard
+
+---
+
+# Security
+
+- Authentication using Laravel Sanctum
+- Request Validation
+- Password Hashing
+- Email Verification
+- Authorization Middleware
+
+---
+
+# Future Improvements
+
+- Docker Support
+- CI/CD Pipeline
+- API Documentation
+- Increase Test Coverage
+- Queue Optimization
+- Redis Integration
+
+---
+
+# Author
+
+**Qasim Mohammad**
+
+Backend Developer
+
+GitHub:
+https://github.com/qasmmhamd
+
+---
+
+# License
+
+This project was developed as a graduation project.
